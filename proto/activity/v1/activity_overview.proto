@@ -4,9 +4,9 @@ package activity.v1;
 
 import "google/type/datetime.proto";
 
-message Activity {
+message ActivityOverview {
   string activity_id = 1;
-  string activity_video_url = 2;
+  string activity_thumbnail_url = 2;
 
   uint32 activity_score = 3;
 

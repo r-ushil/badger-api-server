@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package drill.v1;
+
+enum MediaType {
+  MEDIA_TYPE_UNSPECIFIED = 0;
+  MEDIA_TYPE_VIDEO = 1;
+  MEDIA_TYPE_IMAGE = 2;
+}
+
+message DrillInstructionStep {
+  string title = 1;
+  string description = 2;
+  string media_url = 3;
+  MediaType media_type = 4;
+}
+
+message DrillInstructions {
+  string introduction = 1;
+  repeated DrillInstructionStep steps = 2;
+}

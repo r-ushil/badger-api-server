@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package activity.v1;
+
+import "google/type/datetime.proto";
+
+import "activity/v1/activity.proto";
+import "activity/v1/activity_overview.proto";
+
+service ActivityService {
+  rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {}
+  rpc GetActivities(GetActivitiesRequest) returns (GetActivitiesResponse) {}
+}
+
+message GetActivityRequest {
+  string activity_id = 1;
+}
+
+message GetActivityResponse {
+  Activity activity = 1;
+}
+
+message GetActivitiesRequest {
+  google.type.DateTime search_start = 1;
+  google.type.DateTime search_end = 2;
+}
+
+message GetActivitiesResponse {
+  repeated ActivityOverview activities = 1;
+}

@@ -63,6 +63,20 @@ func (s *DrillServer) GetDrill(
 	return res, nil
 }
 
+func (s *DrillServer) GetDrillInstructions(
+	ctx context.Context,
+	req *connect.Request[drill_v1.GetDrillInstructionsRequest],
+) (*connect.Response[drill_v1.GetDrillInstructionsResponse], error) {
+
+	log.Println("Request headers: ", req.Header())
+
+	res := connect.NewResponse(&drill_v1.GetDrillInstructionsResponse{})
+
+	res.Header().Set("Example-Version", "v1")
+
+	return res, nil
+}
+
 func (s *DrillServer) GetDrills(
 	ctx context.Context,
 	req *connect.Request[drill_v1.GetDrillsRequest],
