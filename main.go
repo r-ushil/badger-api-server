@@ -10,10 +10,10 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	activity_v1 "badger-api/gen/activity/v1"
-	"badger-api/gen/activity/v1/activity_v1connect"
+	activity_v1connect "badger-api/gen/activity/v1/activityv1connect"
 
 	drill_v1 "badger-api/gen/drill/v1"
-	"badger-api/gen/drill/v1/drill_v1connect"
+	drill_v1connect "badger-api/gen/drill/v1/drillv1connect"
 
 	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
 )
