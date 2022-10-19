@@ -40,8 +40,10 @@ func main() {
 	path, handler := examplev1connect.NewExampleServiceHandler(exampleServer)
 	mux.Handle(path, handler)
 
+	log.Println("Server running.")
+
 	http.ListenAndServe(
-		"localhost:3000",
+		"0.0.0.0:3000",
 		// Use h2c so we can serve HTTP/2 without TLS.
 		h2c.NewHandler(mux, &http2.Server{}),
 	)
