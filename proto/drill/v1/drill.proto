@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package drill.v1;
+
+option go_package = "badger-api/gen/drill/v1;drill_v1";
+
+service DrillService {
+  rpc GetDrill(GetDrillRequest) returns (GetDrillResponse) {}
+  rpc GetDrills(GetDrillsRequest) returns (GetDrillsResponse) {}
+}
+
+message GetDrillRequest {}
+
+message GetDrillResponse {}
+
+message GetDrillsRequest {}
+
+message GetDrillsResponse {}
