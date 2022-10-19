@@ -1,14 +1,16 @@
 {
-  "build": { "dockerfile": "../Dockerfile" },
-
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-		"zxh404.vscode-proto3",
-		"golang.go"
-	]
+        "zxh404.vscode-proto3",
+        "golang.go"
+      ]
     }
   },
-
-  "forwardPorts": [3000]
+  "forwardPorts": [
+    3000
+  ]
 }
