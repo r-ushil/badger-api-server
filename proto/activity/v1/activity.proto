@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package activity.v1;
+
+option go_package = "badger-api/gen/activity/v1;activity_v1";
+
+service ActivityService {
+  rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {}
+  rpc GetActivities(GetActivitiesRequest) returns (GetActivitiesResponse) {}
+}
+
+message GetActivityRequest {}
+
+message GetActivityResponse {}
+
+message GetActivitiesRequest {}
+
+message GetActivitiesResponse {}
