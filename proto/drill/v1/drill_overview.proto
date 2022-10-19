@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package drill.v1;
 
-message Drill {
+message DrillOverview {
   string drill_id = 1;
   string drill_name = 2;
   string drill_description = 3;
