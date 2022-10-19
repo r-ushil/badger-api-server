@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine AS base
+FROM golang:1.19-bullseye AS base
 WORKDIR /workspaces/badger-api-server
 RUN go install github.com/bufbuild/buf/cmd/buf@latest
 RUN go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
@@ -26,13 +26,8 @@ CMD badger-api
 
 FROM base AS devcontainer
 RUN go install golang.org/x/tools/cmd/goimports@latest
-RUN go install github.com/rogpeppe/godef
-
-# FROM base AS builder
-# WORKDIR /go
-# COPY ./proto /go/proto
-# COPY ./main.go /go/src/main.go
-# COPY ./go.mod /go/go.mod
-# COPY ./go.sum /go/go.sum
-# RUN cd ./proto && buf generate && cd ..
-# RUN go build
+RUN go install golang.org/x/tools/cmd/callgraph@latest
+RUN go install golang.org/x/tools/cmd/digraph@latest
+RUN go install golang.org/x/tools/cmd/stringer@latest
+RUN go install golang.org/x/tools/cmd/toolstash@latest
+RUN go install golang.org/x/tools/gopls@latest
