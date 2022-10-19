@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package example.v1;
+
+option go_package = "badger-api/gen/example/v1;examplev1";
+
+message ExampleRequest {
+  string name = 1;
+}
+
+message ExampleResponse {
+  string example_text = 1;
+}
+
+service ExampleService {
+  rpc Example(ExampleRequest) returns (ExampleResponse) {}
+}
