@@ -18,11 +18,10 @@ RUN buf generate
 
 FROM proto_builder AS builder
 COPY ./main.go .
-RUN go build -o /usr/local/bin
+RUN go build -o /usr/local/bin/badger_api ./cmd
 
 FROM builder AS deploy
-# RUN apk add --update --no-cache libc6-compat ca-certificates tzdata
-CMD badger-api
+CMD badger_api
 
 FROM base AS devcontainer
 RUN go install golang.org/x/tools/cmd/goimports@latest
