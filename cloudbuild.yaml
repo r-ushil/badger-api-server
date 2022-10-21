@@ -1,0 +1,47 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile"
+      - "-t"
+      - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:$COMMIT_SHA"
+      - "--target"
+      - "deploy"
+      - "."
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:$COMMIT_SHA"
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "${_GCR_SERVICE_NAME}"
+      - "--image"
+      - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:$COMMIT_SHA"
+      - "--region"
+      - "${_GCR_SERVICE_REGION}"
+      - "--allow-unauthenticated"
+  - name: "bufbuild/buf"
+    secretEnv:
+      - "BUF_TOKEN"
+    script: |
+      #!/bin/bash
+      buf push
+images:
+  - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}"
+substitutions:
+  _GAR_REGION: europe-west1
+  _GCR_SERVICE_REGION: europe-west1
+  _IMAGE: badger-api
+  _REPOSITORY: badger
+  _BUF_TOKEN_KEY: badger-buf-token-ci
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/${_BUF_TOKEN_KEY}/versions/latest
+      env: BUF_TOKEN
+options:
+  dynamic_substitutions: true
+timeout: 900s
