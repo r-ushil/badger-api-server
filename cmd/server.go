@@ -23,23 +23,26 @@ func GetMongoConnUri(
 	user string,
 	pass string,
 	host string,
+	path string,
 ) string {
 	uri := url.URL{
 		Scheme: scheme,
 		Host:   host,
 		User:   url.UserPassword(user, pass),
+		Path:   path,
 	}
 
 	return uri.String()
 }
 
 func main() {
-	mongo_scheme := "mongodb"
+	mongo_scheme := os.Getenv("MONGO_SCHEME")
 	mongo_user := os.Getenv("MONGO_USER")
 	mongo_pass := os.Getenv("MONGO_PASS")
-	mongo_host := os.Getenv("MONGO_ADDR")
+	mongo_host := os.Getenv("MONGO_HOST")
+	mongo_path := os.Getenv("MONGO_PATH")
 
-	mongo_conn_uri := GetMongoConnUri(mongo_scheme, mongo_user, mongo_pass, mongo_host)
+	mongo_conn_uri := GetMongoConnUri(mongo_scheme, mongo_user, mongo_pass, mongo_host, mongo_path)
 
 	ctx := server.NewServerContext(mongo_conn_uri)
 	defer ctx.Cleanup()
