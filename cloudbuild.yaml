@@ -25,11 +25,11 @@ steps:
       - "${_GCR_SERVICE_REGION}"
       - "--allow-unauthenticated"
   - name: "bufbuild/buf"
+    dir: proto
     secretEnv:
       - "BUF_TOKEN"
-    script: |
-      #!/bin/bash
-      buf push
+    args:
+      - "push"
 images:
   - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}"
 substitutions:
