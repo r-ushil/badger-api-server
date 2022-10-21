@@ -40,3 +40,11 @@ func NewServerContext(db_conn_uri string) *ServerContext {
 func (s *ServerContext) Cleanup() {
 	s.db_client.Disconnect(s.db_ctx)
 }
+
+func (s *ServerContext) GetMongoDbClient() *mongo.Client {
+	return s.db_client
+}
+
+func (s *ServerContext) GetMongoContext() context.Context {
+	return context.Background()
+}
