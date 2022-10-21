@@ -22,8 +22,6 @@ steps:
       - "BUF_TOKEN"
     args:
       - "push"
-images:
-  - "${_GAR_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}"
 substitutions:
   _GAR_REGION: europe-west1
   _GCR_SERVICE_NAME: badger-api
