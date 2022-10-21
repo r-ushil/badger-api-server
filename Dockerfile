@@ -17,7 +17,9 @@ COPY ./proto ./proto
 RUN buf generate
 
 FROM proto_builder AS builder
-COPY ./main.go .
+COPY ./cmd ./cmd
+COPY ./internal ./internal
+COPY ./pkg ./pkg
 RUN go build -o /usr/local/bin/badger_api ./cmd
 
 FROM builder AS deploy
