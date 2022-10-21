@@ -1,0 +1,23 @@
+const database = 'badger_db';
+const collection = 'drills';
+
+use(database);
+
+db.getCollection(collection).drop()
+
+db.createCollection(collection);
+
+db.getCollection(collection).insertOne({
+    name: "Drill One",
+    description: "I hear great things about drill one",
+})
+
+db.getCollection(collection).insertOne({
+    name: "Drill Two",
+    description: "I hear great things aboout drill two",
+})
+
+db.getCollection(collection).insertOne({
+    name: "Drill Three",
+    description: "I hear great things about drill three",
+})
