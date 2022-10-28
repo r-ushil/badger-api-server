@@ -17,13 +17,6 @@ type Activity struct {
 	Timestamp primitive.Timestamp `bson:"description"`
 }
 
-//   string activity_id = 1;
-//   string activity_video_url = 2;
-//
-//   uint32 activity_score = 3;
-//
-//   google.type.DateTime timestamp = 4;
-
 func (a *Activity) GetId() string {
 	return a.Id
 }
