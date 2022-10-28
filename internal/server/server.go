@@ -28,6 +28,6 @@ func NewServer(ctx *server.ServerContext) BadgerServer {
 }
 
 func (s *BadgerServer) Listen(addr string) {
-	log.Println("Server running")
+	log.Println("Server running on", addr)
 	http.ListenAndServe(addr, h2c.NewHandler(s.mux, &http2.Server{}))
 }
