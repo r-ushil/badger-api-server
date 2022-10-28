@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -47,10 +48,16 @@ func GetDrills(s *server.ServerContext) []Drill {
 
 var ErrNotFound error
 
-func GetDrill(s *server.ServerContext, id string) (*Drill, error) {
+func GetDrill(s *server.ServerContext, hexId string) (*Drill, error) {
 	col := s.GetCollection("drills")
 
-	query := bson.D{{Key: "_id", Value: id}}
+	objectId, idErr := primitive.ObjectIDFromHex(hexId)
+
+	if idErr != nil {
+		panic(idErr)
+	}
+
+	query := bson.D{{Key: "_id", Value: objectId}}
 
 	var drill Drill
 	err := col.FindOne(s.GetMongoContext(), query).Decode(&drill)

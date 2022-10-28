@@ -76,10 +76,16 @@ func GetActivities(s *server.ServerContext) []Activity {
 
 var ErrNotFound error
 
-func GetActivity(s *server.ServerContext, id string) (*Activity, error) {
+func GetActivity(s *server.ServerContext, hexId string) (*Activity, error) {
 	col := s.GetCollection("activities")
 
-	query := bson.D{{Key: "_id", Value: id}}
+	objectId, idErr := primitive.ObjectIDFromHex(hexId)
+
+	if idErr != nil {
+		panic(idErr)
+	}
+
+	query := bson.D{{Key: "_id", Value: objectId}}
 
 	var mongoActivity mongoActivityT
 	err := col.FindOne(s.GetMongoContext(), query).Decode(&mongoActivity)
