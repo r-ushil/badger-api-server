@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"golang.org/x/net/http2"
@@ -27,5 +28,6 @@ func NewServer(ctx *server.ServerContext) BadgerServer {
 }
 
 func (s *BadgerServer) Listen(addr string) {
+	log.Println("Server running")
 	http.ListenAndServe(addr, h2c.NewHandler(s.mux, &http2.Server{}))
 }
