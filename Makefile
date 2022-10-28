@@ -11,5 +11,8 @@ run: build
 build:
 		go build -o /usr/local/bin/badger_api ./cmd
 
-gen:
+generate:
 		buf generate
+
+clean_generate:
+		rm -rf ./buf && buf generate
