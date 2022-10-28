@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/url"
 	"os"
 
@@ -44,7 +45,9 @@ func main() {
 
 	mongo_conn_uri := GetMongoConnUri(mongo_scheme, mongo_user, mongo_pass, mongo_host, mongo_path)
 
+	log.Println("Creating new server context.")
 	ctx := server.NewServerContext(mongo_conn_uri)
+	log.Println("Creating new server context done.")
 	defer ctx.Cleanup()
 
 	server_host := GetEnvWithDefault("HOST", "0.0.0.0")
