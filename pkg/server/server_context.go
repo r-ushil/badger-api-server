@@ -18,7 +18,7 @@ type ServerContext struct {
 }
 
 func NewServerContext(db_conn_uri string) *ServerContext {
-	db_client, err_client := mongo.NewClient(options.Client().ApplyURI(db_conn_uri))
+	db_client, err_client := mongo.NewClient(options.Client().ApplyURI(db_conn_uri).SetLoadBalanced(true))
 
 	if err_client != nil {
 		log.Fatal(err_client)
