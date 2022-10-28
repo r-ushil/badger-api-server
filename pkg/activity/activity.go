@@ -56,10 +56,7 @@ func (a *Activity) GetTimestampGoogleFormat() datetime.DateTime {
 }
 
 func GetActivities(s *server.ServerContext) []Activity {
-	client := s.GetMongoDbClient()
-
-	db := client.Database("badger_db")
-	col := db.Collection("activities")
+	col := s.GetCollection("activities")
 
 	cur, err_find := col.Find(s.GetMongoContext(), bson.D{})
 
@@ -80,10 +77,7 @@ func GetActivities(s *server.ServerContext) []Activity {
 var ErrNotFound error
 
 func GetActivity(s *server.ServerContext, id string) (*Activity, error) {
-	client := s.GetMongoDbClient()
-
-	db := client.Database("badger_db")
-	col := db.Collection("activities")
+	col := s.GetCollection("activities")
 
 	query := bson.D{{Key: "_id", Value: id}}
 

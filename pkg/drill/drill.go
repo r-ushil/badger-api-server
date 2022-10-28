@@ -27,10 +27,7 @@ func (d *Drill) GetDescription() string {
 }
 
 func GetDrills(s *server.ServerContext) []Drill {
-	client := s.GetMongoDbClient()
-
-	db := client.Database("badger_db")
-	col := db.Collection("drills")
+	col := s.GetCollection("drills")
 
 	cur, err_find := col.Find(s.GetMongoContext(), bson.D{})
 
@@ -51,10 +48,7 @@ func GetDrills(s *server.ServerContext) []Drill {
 var ErrNotFound error
 
 func GetDrill(s *server.ServerContext, id string) (*Drill, error) {
-	client := s.GetMongoDbClient()
-
-	db := client.Database("badger_db")
-	col := db.Collection("drills")
+	col := s.GetCollection("drills")
 
 	query := bson.D{{Key: "_id", Value: id}}
 
