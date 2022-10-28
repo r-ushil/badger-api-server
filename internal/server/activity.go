@@ -4,9 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"cloud.google.com/go/civil"
 	"github.com/bufbuild/connect-go"
-	"google.golang.org/genproto/googleapis/type/datetime"
 
 	activity_v1 "badger-api/gen/activity/v1"
 	"badger-api/gen/activity/v1/activityv1connect"
@@ -30,23 +28,13 @@ func (s *ActivityServer) GetActivity(
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
 
-	civilDateTime := civil.DateTimeOf(a.GetTimestamp())
-	googleDateTime := datetime.DateTime{
-		Year:    int32(civilDateTime.Date.Year),
-		Month:   int32(civilDateTime.Date.Month),
-		Day:     int32(civilDateTime.Date.Day),
-		Hours:   int32(civilDateTime.Time.Hour),
-		Minutes: int32(civilDateTime.Time.Minute),
-		Seconds: int32(civilDateTime.Time.Second),
-		Nanos:   int32(civilDateTime.Time.Nanosecond),
-	}
-
+	timestampGoogleFormat := a.GetTimestampGoogleFormat()
 	res := connect.NewResponse(&activity_v1.GetActivityResponse{
 		Activity: &activity_v1.Activity{
 			ActivityId:        a.GetId(),
 			ActivityVideoUrl:  a.GetVideoUrl(),
 			ActivityScore:     a.GetScore(),
-			ActivityTimestamp: &googleDateTime,
+			ActivityTimestamp: &timestampGoogleFormat,
 		},
 	})
 
@@ -63,22 +51,12 @@ func (s *ActivityServer) GetActivities(
 
 	for _, a := range ds {
 
-		civilDateTime := civil.DateTimeOf(a.GetTimestamp())
-		googleDateTime := datetime.DateTime{
-			Year:    int32(civilDateTime.Date.Year),
-			Month:   int32(civilDateTime.Date.Month),
-			Day:     int32(civilDateTime.Date.Day),
-			Hours:   int32(civilDateTime.Time.Hour),
-			Minutes: int32(civilDateTime.Time.Minute),
-			Seconds: int32(civilDateTime.Time.Second),
-			Nanos:   int32(civilDateTime.Time.Nanosecond),
-		}
-
+		timestampGoogleFormat := a.GetTimestampGoogleFormat()
 		activities = append(activities, &activity_v1.ActivityOverview{
 			ActivityId:           a.GetId(),
 			ActivityThumbnailUrl: "UNIMPLEMENTED",
 			ActivityScore:        a.GetScore(),
-			ActivityTimestamp:    &googleDateTime,
+			ActivityTimestamp:    &timestampGoogleFormat,
 		})
 	}
 

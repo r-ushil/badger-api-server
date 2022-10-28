@@ -5,16 +5,25 @@ import (
 	"context"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/genproto/googleapis/type/datetime"
 )
 
-type Activity struct {
+type mongoActivityT struct {
 	Id        string              `bson:"_id"`
 	VideoUrl  string              `bson:"name"`
 	Score     uint32              `bson:"description"`
 	Timestamp primitive.Timestamp `bson:"description"`
+}
+
+type Activity struct {
+	Id        string
+	VideoUrl  string
+	Score     uint32
+	Timestamp time.Time
 }
 
 func (a *Activity) GetId() string {
@@ -30,7 +39,20 @@ func (a *Activity) GetScore() uint32 {
 }
 
 func (a *Activity) GetTimestamp() time.Time {
-	return time.Unix(int64(a.Timestamp.T), 0)
+	return a.Timestamp
+}
+
+func (a *Activity) GetTimestampGoogleFormat() datetime.DateTime {
+	civilDateTime := civil.DateTimeOf(a.GetTimestamp())
+	return datetime.DateTime{
+		Year:    int32(civilDateTime.Date.Year),
+		Month:   int32(civilDateTime.Date.Month),
+		Day:     int32(civilDateTime.Date.Day),
+		Hours:   int32(civilDateTime.Time.Hour),
+		Minutes: int32(civilDateTime.Time.Minute),
+		Seconds: int32(civilDateTime.Time.Second),
+		Nanos:   int32(civilDateTime.Time.Nanosecond),
+	}
 }
 
 func GetActivities(s *server.ServerContext) []Activity {
@@ -65,8 +87,15 @@ func GetActivity(s *server.ServerContext, id string) (*Activity, error) {
 
 	query := bson.D{{Key: "_id", Value: id}}
 
-	var activity Activity
-	err := col.FindOne(s.GetMongoContext(), query).Decode(&activity)
+	var mongoActivity mongoActivityT
+	err := col.FindOne(s.GetMongoContext(), query).Decode(&mongoActivity)
+
+	activity := Activity{
+		Id:        mongoActivity.Id,
+		VideoUrl:  mongoActivity.VideoUrl,
+		Score:     mongoActivity.Score,
+		Timestamp: time.Unix(int64(mongoActivity.Timestamp.T), 0),
+	}
 
 	if err == mongo.ErrNoDocuments {
 		return nil, ErrNotFound
