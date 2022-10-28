@@ -10,5 +10,5 @@ message ActivityOverview {
 
   uint32 activity_score = 3;
 
-  google.type.DateTime timestamp = 4;
+  google.type.DateTime activity_timestamp = 4;
 }
