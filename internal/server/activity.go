@@ -4,11 +4,14 @@ import (
 	"context"
 	"net/http"
 
+	"cloud.google.com/go/civil"
 	"github.com/bufbuild/connect-go"
+	"google.golang.org/genproto/googleapis/type/datetime"
 
 	activity_v1 "badger-api/gen/activity/v1"
 	"badger-api/gen/activity/v1/activityv1connect"
 
+	"badger-api/pkg/activity"
 	"badger-api/pkg/server"
 )
 
@@ -20,8 +23,32 @@ func (s *ActivityServer) GetActivity(
 	ctx context.Context,
 	req *connect.Request[activity_v1.GetActivityRequest],
 ) (*connect.Response[activity_v1.GetActivityResponse], error) {
-	res := connect.NewResponse(&activity_v1.GetActivityResponse{})
-	res.Header().Set("Example-Version", "v1")
+
+	a, err := activity.GetActivity(s.ctx, req.Msg.ActivityId)
+
+	if err == activity.ErrNotFound {
+		return nil, connect.NewError(connect.CodeNotFound, err)
+	}
+
+	civilDateTime := civil.DateTimeOf(a.GetTimestamp())
+	googleDateTime := datetime.DateTime{
+		Year:    int32(civilDateTime.Date.Year),
+		Month:   int32(civilDateTime.Date.Month),
+		Day:     int32(civilDateTime.Date.Day),
+		Hours:   int32(civilDateTime.Time.Hour),
+		Minutes: int32(civilDateTime.Time.Minute),
+		Seconds: int32(civilDateTime.Time.Second),
+		Nanos:   int32(civilDateTime.Time.Nanosecond),
+	}
+
+	res := connect.NewResponse(&activity_v1.GetActivityResponse{
+		Activity: &activity_v1.Activity{
+			ActivityId:        a.GetId(),
+			ActivityVideoUrl:  a.GetVideoUrl(),
+			ActivityScore:     a.GetScore(),
+			ActivityTimestamp: &googleDateTime,
+		},
+	})
 
 	return res, nil
 }
@@ -30,8 +57,34 @@ func (s *ActivityServer) GetActivities(
 	ctx context.Context,
 	req *connect.Request[activity_v1.GetActivitiesRequest],
 ) (*connect.Response[activity_v1.GetActivitiesResponse], error) {
-	res := connect.NewResponse(&activity_v1.GetActivitiesResponse{})
-	res.Header().Set("Example-Version", "v1")
+	ds := activity.GetActivities(s.ctx)
+
+	activities := make([]*activity_v1.ActivityOverview, 0, len(ds))
+
+	for _, a := range ds {
+
+		civilDateTime := civil.DateTimeOf(a.GetTimestamp())
+		googleDateTime := datetime.DateTime{
+			Year:    int32(civilDateTime.Date.Year),
+			Month:   int32(civilDateTime.Date.Month),
+			Day:     int32(civilDateTime.Date.Day),
+			Hours:   int32(civilDateTime.Time.Hour),
+			Minutes: int32(civilDateTime.Time.Minute),
+			Seconds: int32(civilDateTime.Time.Second),
+			Nanos:   int32(civilDateTime.Time.Nanosecond),
+		}
+
+		activities = append(activities, &activity_v1.ActivityOverview{
+			ActivityId:           a.GetId(),
+			ActivityThumbnailUrl: "UNIMPLEMENTED",
+			ActivityScore:        a.GetScore(),
+			ActivityTimestamp:    &googleDateTime,
+		})
+	}
+
+	res := connect.NewResponse(&activity_v1.GetActivitiesResponse{
+		Activities: activities,
+	})
 
 	return res, nil
 }
