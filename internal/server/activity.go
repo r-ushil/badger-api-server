@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/bufbuild/connect-go"
@@ -24,8 +25,10 @@ func (s *ActivityServer) GetActivity(
 
 	a, err := activity.GetActivity(s.ctx, req.Msg.ActivityId)
 
-	if err == activity.ErrNotFound {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+	if err != nil {
+		// TODO: Handle properly
+		log.Println(err)
+		return nil, connect.NewError(connect.CodeUnimplemented, err)
 	}
 
 	timestampGoogleFormat := a.GetTimestampGoogleFormat()

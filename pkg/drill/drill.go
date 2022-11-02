@@ -3,6 +3,8 @@ package drill
 import (
 	"badger-api/pkg/server"
 	"context"
+	"errors"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -46,10 +48,10 @@ func GetDrills(s *server.ServerContext) []Drill {
 	return drills
 }
 
-var ErrNotFound error
-
 func GetDrill(s *server.ServerContext, hexId string) (*Drill, error) {
+	log.Println("Getting drill collection. ")
 	col := s.GetCollection("drills")
+	log.Println("Getting drill collection done. ")
 
 	objectId, idErr := primitive.ObjectIDFromHex(hexId)
 
@@ -60,15 +62,20 @@ func GetDrill(s *server.ServerContext, hexId string) (*Drill, error) {
 	query := bson.D{{Key: "_id", Value: objectId}}
 
 	var drill Drill
+	log.Println("Getting drill document. ")
 	err := col.FindOne(s.GetMongoContext(), query).Decode(&drill)
+	log.Println("Getting drill document done. ")
 
 	if err == mongo.ErrNoDocuments {
-		return nil, ErrNotFound
+		return nil, errors.New("ErrNotFound")
 	}
 
 	if err != nil {
 		panic(err)
 	}
+
+	log.Println("All good, returning drill. ")
+	log.Println(drill)
 
 	return &drill, nil
 }

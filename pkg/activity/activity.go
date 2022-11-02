@@ -3,6 +3,7 @@ package activity
 import (
 	"badger-api/pkg/server"
 	"context"
+	"errors"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -74,8 +75,6 @@ func GetActivities(s *server.ServerContext) []Activity {
 	return activities
 }
 
-var ErrNotFound error
-
 func GetActivity(s *server.ServerContext, hexId string) (*Activity, error) {
 	col := s.GetCollection("activities")
 
@@ -98,7 +97,7 @@ func GetActivity(s *server.ServerContext, hexId string) (*Activity, error) {
 	}
 
 	if err == mongo.ErrNoDocuments {
-		return nil, ErrNotFound
+		return nil, errors.New("ErrNotFound")
 	}
 
 	if err != nil {

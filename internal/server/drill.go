@@ -26,8 +26,10 @@ func (s *DrillServer) GetDrill(
 
 	d, err := drill.GetDrill(s.ctx, req.Msg.DrillId)
 
-	if err == drill.ErrNotFound {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+	if err != nil {
+		// TODO: Handle properly
+		log.Println(err)
+		return nil, connect.NewError(connect.CodeUnimplemented, err)
 	}
 
 	res := connect.NewResponse(&drill_v1.GetDrillResponse{
