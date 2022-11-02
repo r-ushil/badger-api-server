@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/bufbuild/connect-go"
@@ -21,10 +22,14 @@ func (s *DrillServer) GetDrill(
 	ctx context.Context,
 	req *connect.Request[drill_v1.GetDrillRequest],
 ) (*connect.Response[drill_v1.GetDrillResponse], error) {
+	log.Println("Getting drill with ID:", req.Msg.DrillId)
+
 	d, err := drill.GetDrill(s.ctx, req.Msg.DrillId)
 
-	if err == drill.ErrNotFound {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+	if err != nil {
+		// TODO: Handle properly
+		log.Println(err)
+		return nil, connect.NewError(connect.CodeUnimplemented, err)
 	}
 
 	res := connect.NewResponse(&drill_v1.GetDrillResponse{

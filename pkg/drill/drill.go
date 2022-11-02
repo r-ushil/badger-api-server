@@ -3,8 +3,11 @@ package drill
 import (
 	"badger-api/pkg/server"
 	"context"
+	"errors"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,10 +30,7 @@ func (d *Drill) GetDescription() string {
 }
 
 func GetDrills(s *server.ServerContext) []Drill {
-	client := s.GetMongoDbClient()
-
-	db := client.Database("badger_db")
-	col := db.Collection("drills")
+	col := s.GetCollection("drills")
 
 	cur, err_find := col.Find(s.GetMongoContext(), bson.D{})
 
@@ -48,26 +48,34 @@ func GetDrills(s *server.ServerContext) []Drill {
 	return drills
 }
 
-var ErrNotFound error
+func GetDrill(s *server.ServerContext, hexId string) (*Drill, error) {
+	log.Println("Getting drill collection. ")
+	col := s.GetCollection("drills")
+	log.Println("Getting drill collection done. ")
 
-func GetDrill(s *server.ServerContext, id string) (*Drill, error) {
-	client := s.GetMongoDbClient()
+	objectId, idErr := primitive.ObjectIDFromHex(hexId)
 
-	db := client.Database("badger_db")
-	col := db.Collection("drills")
+	if idErr != nil {
+		panic(idErr)
+	}
 
-	query := bson.D{{Key: "_id", Value: id}}
+	query := bson.D{{Key: "_id", Value: objectId}}
 
 	var drill Drill
+	log.Println("Getting drill document. ")
 	err := col.FindOne(s.GetMongoContext(), query).Decode(&drill)
+	log.Println("Getting drill document done. ")
 
 	if err == mongo.ErrNoDocuments {
-		return nil, ErrNotFound
+		return nil, errors.New("ErrNotFound")
 	}
 
 	if err != nil {
 		panic(err)
 	}
+
+	log.Println("All good, returning drill. ")
+	log.Println(drill)
 
 	return &drill, nil
 }
