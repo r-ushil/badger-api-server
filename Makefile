@@ -17,3 +17,6 @@ generate:
 
 clean_generate:
 		rm -rf ./buf && buf generate
+
+tests:
+		go test -v ./test/...
