@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package person.v1;
+
+import "person/v1/person.proto";
+
+service PersonService {
+  rpc GetPerson(GetPersonRequest) returns (GetPersonResponse) {}
+  rpc GetPeople(GetPeopleRequest) returns (GetPeopleResponse) {}
+}
+
+message GetPersonRequest {
+  string person_id = 1;
+}
+
+message GetPersonResponse {
+  Person person = 1;
+}
+
+message GetPeopleRequest {}
+
+message GetPeopleResponse {
+  repeated Person people = 1;
+}
