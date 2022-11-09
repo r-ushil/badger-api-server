@@ -4,6 +4,6 @@ package person.v1;
 
 message Person {
   string user_id = 1;
-  string user_score = 2;
+  uint32 user_score = 2;
   string firebase_id = 3;
 }

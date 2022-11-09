@@ -13,7 +13,7 @@ import (
 
 type Person struct {
 	Id         string `bson:"_id"`
-	Score      string `bson:"score"`
+	Score      uint32 `bson:"score"`
 	FirebaseId string `bson:"firebase_id"`
 }
 
@@ -21,7 +21,7 @@ func (d *Person) GetId() string {
 	return d.Id
 }
 
-func (d *Person) GetScore() string {
+func (d *Person) GetScore() uint32 {
 	return d.Score
 }
 
