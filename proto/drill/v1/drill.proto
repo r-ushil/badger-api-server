@@ -8,6 +8,6 @@ message Drill {
   string drill_description = 3;
   string instructions = 4;
   string thumbnail_url = 5;
-  repeated string skill = 6;
+  repeated string skills = 6;
   string video_url = 7;
 }
