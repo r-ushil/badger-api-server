@@ -45,12 +45,6 @@ func TestActivity(t *testing.T) {
 			Expect(err).ToNot(BeNil())
 			Expect(res).To(BeNil())
 		})
-
-		g.It("Should be able to retrieve instructions from a valid drill id")
-
-		g.It("Should be able have an error when retrieving instructions from an invalid drill id")
-
-		g.It("Should be able to retrieve all drills within a certain time frame")
 	})
 
 }
