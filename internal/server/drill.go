@@ -37,17 +37,12 @@ func (s *DrillServer) GetDrill(
 			DrillId:          d.GetId(),
 			DrillName:        d.GetName(),
 			DrillDescription: d.GetDescription(),
+			Instructions:     d.GetInstructions(),
+			ThumbnailUrl:     d.GetThumbnailUrl(),
+			Skills:           d.GetSkills(),
+			VideoUrl:         d.GetVideoUrl(),
 		},
 	})
-
-	return res, nil
-}
-
-func (s *DrillServer) GetDrillInstructions(
-	ctx context.Context,
-	req *connect.Request[drill_v1.GetDrillInstructionsRequest],
-) (*connect.Response[drill_v1.GetDrillInstructionsResponse], error) {
-	res := connect.NewResponse(&drill_v1.GetDrillInstructionsResponse{})
 
 	return res, nil
 }
@@ -58,13 +53,17 @@ func (s *DrillServer) GetDrills(
 ) (*connect.Response[drill_v1.GetDrillsResponse], error) {
 	ds := drill.GetDrills(s.ctx)
 
-	drills := make([]*drill_v1.DrillOverview, 0, len(ds))
+	drills := make([]*drill_v1.Drill, 0, len(ds))
 
 	for _, drill := range ds {
-		drills = append(drills, &drill_v1.DrillOverview{
+		drills = append(drills, &drill_v1.Drill{
 			DrillId:          drill.GetId(),
 			DrillName:        drill.GetName(),
 			DrillDescription: drill.GetDescription(),
+			Instructions:     drill.GetInstructions(),
+			ThumbnailUrl:     drill.GetThumbnailUrl(),
+			Skills:           drill.GetSkills(),
+			VideoUrl:         drill.GetVideoUrl(),
 		})
 	}
 

@@ -3,12 +3,9 @@ syntax = "proto3";
 package drill.v1;
 
 import "drill/v1/drill.proto";
-import "drill/v1/drill_instructions.proto";
-import "drill/v1/drill_overview.proto";
 
 service DrillService {
   rpc GetDrill(GetDrillRequest) returns (GetDrillResponse) {}
-  rpc GetDrillInstructions(GetDrillInstructionsRequest) returns (GetDrillInstructionsResponse) {}
   rpc GetDrills(GetDrillsRequest) returns (GetDrillsResponse) {}
 }
 
@@ -20,16 +17,8 @@ message GetDrillResponse {
   Drill drill = 1;
 }
 
-message GetDrillInstructionsRequest {
-  string drill_id = 1;
-}
-
-message GetDrillInstructionsResponse {
-  DrillInstructions drill_instructions = 1;
-}
-
 message GetDrillsRequest {}
 
 message GetDrillsResponse {
-  repeated DrillOverview drills = 1;
+  repeated Drill drills = 1;
 }

@@ -12,9 +12,13 @@ import (
 )
 
 type Drill struct {
-	Id          string `bson:"_id"`
-	Name        string `bson:"name"`
-	Description string `bson:"description"`
+	Id           string   `bson:"_id"`
+	Name         string   `bson:"name"`
+	Description  string   `bson:"description"`
+	Instructions string   `bson:"instructions"`
+	ThumbnailUrl string   `bson:"thumbnail_url"`
+	Skills 		 []string `bson:"skills"`
+	VideoUrl     string   `bson:"video_url"`
 }
 
 func (d *Drill) GetId() string {
@@ -28,6 +32,23 @@ func (d *Drill) GetName() string {
 func (d *Drill) GetDescription() string {
 	return d.Description
 }
+
+func (d *Drill) GetInstructions() string {
+	return d.Instructions
+}
+
+func (d *Drill) GetThumbnailUrl() string {
+	return d.ThumbnailUrl
+}
+
+func (d *Drill) GetSkills() []string {
+	return d.Skills
+}
+
+func (d *Drill) GetVideoUrl() string {
+	return d.VideoUrl
+}
+
 
 func GetDrills(s *server.ServerContext) []Drill {
 	col := s.GetCollection("drills")
