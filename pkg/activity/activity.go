@@ -13,26 +13,19 @@ import (
 	"google.golang.org/genproto/googleapis/type/datetime"
 )
 
-type mongoActivityT struct {
-	Id        string              `bson:"_id"`
-	VideoUrl  string              `bson:"name"`
-	Score     uint32              `bson:"description"`
-	Timestamp primitive.Timestamp `bson:"description"`
-}
-
 type Activity struct {
-	Id        string
-	VideoUrl  string
-	Score     uint32
-	Timestamp time.Time
+	Id           string    `bson:"_id"`
+	ThumbnailUrl string    `bson:"thumbnail_url"`
+	Score        uint32    `bson:"score"`
+	Timestamp    time.Time `bson:"timestamp"`
 }
 
 func (a *Activity) GetId() string {
 	return a.Id
 }
 
-func (a *Activity) GetVideoUrl() string {
-	return a.VideoUrl
+func (a *Activity) GetThumbnailUrl() string {
+	return a.ThumbnailUrl
 }
 
 func (a *Activity) GetScore() uint32 {
@@ -86,15 +79,8 @@ func GetActivity(s *server.ServerContext, hexId string) (*Activity, error) {
 
 	query := bson.D{{Key: "_id", Value: objectId}}
 
-	var mongoActivity mongoActivityT
-	err := col.FindOne(s.GetMongoContext(), query).Decode(&mongoActivity)
-
-	activity := Activity{
-		Id:        mongoActivity.Id,
-		VideoUrl:  mongoActivity.VideoUrl,
-		Score:     mongoActivity.Score,
-		Timestamp: time.Unix(int64(mongoActivity.Timestamp.T), 0),
-	}
+	var activity Activity
+	err := col.FindOne(s.GetMongoContext(), query).Decode(&activity)
 
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("ErrNotFound")

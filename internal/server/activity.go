@@ -34,10 +34,10 @@ func (s *ActivityServer) GetActivity(
 	timestampGoogleFormat := a.GetTimestampGoogleFormat()
 	res := connect.NewResponse(&activity_v1.GetActivityResponse{
 		Activity: &activity_v1.Activity{
-			ActivityId:        a.GetId(),
-			ActivityVideoUrl:  a.GetVideoUrl(),
-			ActivityScore:     a.GetScore(),
-			ActivityTimestamp: &timestampGoogleFormat,
+			ActivityId:           a.GetId(),
+			ActivityThumbnailUrl: a.GetThumbnailUrl(),
+			ActivityScore:        a.GetScore(),
+			ActivityTimestamp:    &timestampGoogleFormat,
 		},
 	})
 
@@ -57,7 +57,7 @@ func (s *ActivityServer) GetActivities(
 		timestampGoogleFormat := a.GetTimestampGoogleFormat()
 		activities = append(activities, &activity_v1.ActivityOverview{
 			ActivityId:           a.GetId(),
-			ActivityThumbnailUrl: "UNIMPLEMENTED",
+			ActivityThumbnailUrl: a.GetThumbnailUrl(),
 			ActivityScore:        a.GetScore(),
 			ActivityTimestamp:    &timestampGoogleFormat,
 		})

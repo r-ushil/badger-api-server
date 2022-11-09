@@ -18,5 +18,8 @@ generate:
 clean_generate:
 		rm -rf ./buf && buf generate
 
-tests:
-		go test -v ./test/...
+integration_tests:
+		go test -v ./test/integration/...
+
+unit_tests:
+		go test -v ./test/unit/...

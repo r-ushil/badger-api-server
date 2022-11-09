@@ -27,10 +27,4 @@ func TestDrill(t *testing.T) {
 			Expect(drill.GetDescription()).To(Equal("sprinting drill"))
 		})
 	})
-
-	g.Describe("DrillServers", func() {
-		g.It("Should retrieve all drills")
-		g.It("Should retrieve a specific drill")
-		g.It("Should retrieve instructions for a specific drill")
-	})
 }
