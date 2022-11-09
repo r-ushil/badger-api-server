@@ -43,15 +43,6 @@ func (s *DrillServer) GetDrill(
 	return res, nil
 }
 
-func (s *DrillServer) GetDrillInstructions(
-	ctx context.Context,
-	req *connect.Request[drill_v1.GetDrillInstructionsRequest],
-) (*connect.Response[drill_v1.GetDrillInstructionsResponse], error) {
-	res := connect.NewResponse(&drill_v1.GetDrillInstructionsResponse{})
-
-	return res, nil
-}
-
 func (s *DrillServer) GetDrills(
 	ctx context.Context,
 	req *connect.Request[drill_v1.GetDrillsRequest],

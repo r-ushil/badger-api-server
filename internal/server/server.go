@@ -18,8 +18,7 @@ func NewServer(ctx *server.ServerContext) BadgerServer {
 	mux := http.NewServeMux()
 
 	RegisterReflector(mux)
-
-	RegisterActivityService(mux, ctx)
+	
 	RegisterDrillService(mux, ctx)
 	RegisterPersonService(mux, ctx)
 
