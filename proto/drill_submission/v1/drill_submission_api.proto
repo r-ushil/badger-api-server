@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package drill_submission.v1;
+
+import "drill_submission/v1/drill_submission.proto";
+
+service DrillSubmissionService {
+    rpc GetDrillSubmission(GetDrillSubmissionRequest) returns (GetDrillSubmissionResponse) {}
+    rpc GetDrillSubmissions(GetDrillSubmissionsRequest) returns (GetDrillSubmissionsResponse) {}
+    rpc GetUserDrillSubmissions(GetUserDrillSubmissionsRequest) returns (GetUserDrillSubmissionsResponse) {}
+}
+  
+message GetDrillSubmissionRequest {
+    string drill_submission_id = 1;
+}
+
+message GetDrillSubmissionResponse {
+    DrillSubmission drill_submission = 1;
+}   
+
+message GetUserDrillSubmissionsRequest {
+    string person_id = 1;
+}
+
+message GetUserDrillSubmissionsResponse {
+    repeated DrillSubmission drill_submissions = 1;
+}
+
+message GetDrillSubmissionsRequest {}
+
+message GetDrillSubmissionsResponse {
+    repeated DrillSubmission drill_submissions = 1;
+}
