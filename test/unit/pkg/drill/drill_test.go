@@ -1,30 +1,50 @@
 package drill_test
 
 import (
-	"badger-api/pkg/drill"
+	drill_v1 "badger-api/gen/drill/v1"
+	drill_v1_connect "badger-api/gen/drill/v1/drillv1connect"
+	"context"
+	"net/http"
 	"testing"
 
+	"github.com/bufbuild/connect-go"
 	goblin "github.com/franela/goblin"
 	. "github.com/onsi/gomega"
 )
 
-func TestDrill(t *testing.T) {
+func TestActivity(t *testing.T) {
 	g := goblin.Goblin(t)
 
 	RegisterFailHandler(func(m string, _ ...int) { g.Fail(m) })
-	g.Describe("DrillsStructs", func() {
-		var drill = drill.Drill{Id: "3", Name: "cones", Description: "sprinting drill"}
 
-		// Passing Test
-		g.It("Should retrieve id", func() {
-			Expect(drill.GetId()).To(Equal("3"))
+	client := drill_v1_connect.NewDrillServiceClient(http.DefaultClient, "http://0.0.0.0:3000", connect.WithGRPC())
+
+	const GOOD_DRILL_ID = "6352414e50c7d61db5d52861"
+	const BAD_DRILL_ID = "42"
+
+	g.Describe("DrillServer", func() {
+		g.It("Should be able to retrieve all drills", func() {
+			req := connect.NewRequest(&drill_v1.GetDrillsRequest{})
+			res, err := client.GetDrills(context.Background(), req)
+			Expect(res).NotTo(BeNil())
+			Expect(len(res.Msg.GetDrills())).NotTo(Equal(0))
+			Expect(err).To(BeNil())
 		})
-		// Failing Test
-		g.It("Should retreive name", func() {
-			Expect(drill.GetName()).To(Equal("cones"))
+
+		g.It("Should be able to retrieve a drill from a valid drill id", func() {
+			req := connect.NewRequest(&drill_v1.GetDrillRequest{DrillId: GOOD_DRILL_ID})
+			res, err := client.GetDrill(context.Background(), req)
+			Expect(err).To(BeNil())
+			Expect(res).NotTo(BeNil())
+			Expect(res.Msg.Drill.GetDrillId()).To(Equal(GOOD_DRILL_ID))
 		})
-		g.It("Should retrieve description", func() {
-			Expect(drill.GetDescription()).To(Equal("sprinting drill"))
+
+		g.It("Should have an error when retrieving a drill from an invalid drill id", func() {
+			req := connect.NewRequest(&drill_v1.GetDrillRequest{DrillId: BAD_DRILL_ID})
+			res, err := client.GetDrill(context.Background(), req)
+			Expect(err).NotTo(BeNil())
+			Expect(res).To(BeNil())
 		})
 	})
+
 }
