@@ -19,7 +19,7 @@ message GetDrillSubmissionResponse {
 }   
 
 message GetUserDrillSubmissionsRequest {
-    string person_id = 1;
+    string user_id = 1;
 }
 
 message GetUserDrillSubmissionsResponse {

@@ -5,21 +5,23 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/genproto/googleapis/type/datetime"
 )
 
 type DrillSubmission struct {
-	DrillSubmissionId string                 `bson:"_id"`
-	UserId            string                 `bson:"user_id"`
-	DrillId           string                 `bson:"drill_id"`
-	BucketUrl         string                 `bson:"bucket_url"`
-	Timestamp         *timestamppb.Timestamp `bson:"timestamp"`
-	ProcessingStatus  string                 `bson:"processing_status"`
-	DrillScore        uint32                 `bson:"drill_score"`
+	DrillSubmissionId string    `bson:"_id"`
+	UserId            string    `bson:"user_id"`
+	DrillId           string    `bson:"drill_id"`
+	BucketUrl         string    `bson:"bucket_url"`
+	Timestamp         time.Time `bson:"timestamp"`
+	ProcessingStatus  string    `bson:"processing_status"`
+	DrillScore        uint32    `bson:"drill_score"`
 }
 
 func (d *DrillSubmission) GetId() string {
@@ -38,8 +40,21 @@ func (d *DrillSubmission) GetBucketUrl() string {
 	return d.BucketUrl
 }
 
-func (d *DrillSubmission) GetTimestamp() *timestamppb.Timestamp {
+func (d *DrillSubmission) GetTimestamp() time.Time {
 	return d.Timestamp
+}
+
+func (d *DrillSubmission) GetTimestampGoogleFormat() datetime.DateTime {
+	civilDateTime := civil.DateTimeOf(d.GetTimestamp())
+	return datetime.DateTime{
+		Year:    int32(civilDateTime.Date.Year),
+		Month:   int32(civilDateTime.Date.Month),
+		Day:     int32(civilDateTime.Date.Day),
+		Hours:   int32(civilDateTime.Time.Hour),
+		Minutes: int32(civilDateTime.Time.Minute),
+		Seconds: int32(civilDateTime.Time.Second),
+		Nanos:   int32(civilDateTime.Time.Nanosecond),
+	}
 }
 
 func (d *DrillSubmission) GetProcessingStatus() string {
@@ -110,7 +125,7 @@ func GetUserDrillSubmissions(s *server.ServerContext, hexUserId string) []DrillS
 		panic(idErr)
 	}
 
-	query := bson.D{{Key: "_id", Value: objectId}}
+	query := bson.D{{Key: "user_id", Value: objectId}}
 
 	cur, err_find := col.Find(s.GetMongoContext(), query)
 
