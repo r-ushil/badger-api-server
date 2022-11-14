@@ -31,16 +31,16 @@ func (s *DrillSubmissionServer) GetDrillSubmission(
 		log.Println(err)
 		return nil, connect.NewError(connect.CodeUnimplemented, err)
 	}
-
+	timestampGoogleFormat := d.GetTimestampGoogleFormat()
 	res := connect.NewResponse(&drill_submission_v1.GetDrillSubmissionResponse{
 		DrillSubmission: &drill_submission_v1.DrillSubmission{
-			DrillSubmissionId:d.GetId(),
-			UserId:           d.GetUserId(),
-			DrillId:          d.GetDrillId(),
-			BucketUrl:        d.GetBucketUrl(),
-			Timestamp:        d.GetTimestamp(),
-			ProcessingStatus: d.GetProcessingStatus(),
-			DrillScore:       d.GetDrillScore(),
+			DrillSubmissionId: d.GetId(),
+			UserId:            d.GetUserId(),
+			DrillId:           d.GetDrillId(),
+			BucketUrl:         d.GetBucketUrl(),
+			Timestamp:         &timestampGoogleFormat,
+			ProcessingStatus:  d.GetProcessingStatus(),
+			DrillScore:        d.GetDrillScore(),
 		},
 	})
 
@@ -56,14 +56,15 @@ func (s *DrillSubmissionServer) GetDrillSubmissions(
 	drill_submissions := make([]*drill_submission_v1.DrillSubmission, 0, len(dss))
 
 	for _, d := range dss {
+		timestampGoogleFormat := d.GetTimestampGoogleFormat()
 		drill_submissions = append(drill_submissions, &drill_submission_v1.DrillSubmission{
-			DrillSubmissionId:d.GetId(),
-			UserId:           d.GetUserId(),
-			DrillId:          d.GetDrillId(),
-			BucketUrl:        d.GetBucketUrl(),
-			Timestamp:        d.GetTimestamp(),
-			ProcessingStatus: d.GetProcessingStatus(),
-			DrillScore:       d.GetDrillScore(),
+			DrillSubmissionId: d.GetId(),
+			UserId:            d.GetUserId(),
+			DrillId:           d.GetDrillId(),
+			BucketUrl:         d.GetBucketUrl(),
+			Timestamp:         &timestampGoogleFormat,
+			ProcessingStatus:  d.GetProcessingStatus(),
+			DrillScore:        d.GetDrillScore(),
 		})
 	}
 
@@ -78,19 +79,20 @@ func (s *DrillSubmissionServer) GetUserDrillSubmissions(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.GetUserDrillSubmissionsRequest],
 ) (*connect.Response[drill_submission_v1.GetUserDrillSubmissionsResponse], error) {
-	dss := drill_submission.GetUserDrillSubmissions(s.ctx, req.Msg.PersonId)
+	dss := drill_submission.GetUserDrillSubmissions(s.ctx, req.Msg.UserId)
 
 	drill_submissions := make([]*drill_submission_v1.DrillSubmission, 0, len(dss))
 
 	for _, d := range dss {
+		timestampGoogleFormat := d.GetTimestampGoogleFormat()
 		drill_submissions = append(drill_submissions, &drill_submission_v1.DrillSubmission{
-			DrillSubmissionId:d.GetId(),
-			UserId:           d.GetUserId(),
-			DrillId:          d.GetDrillId(),
-			BucketUrl:        d.GetBucketUrl(),
-			Timestamp:        d.GetTimestamp(),
-			ProcessingStatus: d.GetProcessingStatus(),
-			DrillScore:       d.GetDrillScore(),
+			DrillSubmissionId: d.GetId(),
+			UserId:            d.GetUserId(),
+			DrillId:           d.GetDrillId(),
+			BucketUrl:         d.GetBucketUrl(),
+			Timestamp:         &timestampGoogleFormat,
+			ProcessingStatus:  d.GetProcessingStatus(),
+			DrillScore:        d.GetDrillScore(),
 		})
 	}
 

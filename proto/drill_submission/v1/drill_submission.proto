@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package drill_submission.v1;
 
-import "google/protobuf/timestamp.proto";
+import "google/type/datetime.proto";
 
 message DrillSubmission {
     string drill_submission_id = 1;
     string user_id = 2;
     string drill_id = 3;
     string bucket_url = 4;
-    google.protobuf.Timestamp timestamp = 5;
+    google.type.DateTime timestamp = 5;
     string processing_status = 6;
     uint32 drill_score = 7;
 }
