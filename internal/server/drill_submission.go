@@ -74,6 +74,16 @@ func (s *DrillSubmissionServer) GetDrillSubmissions(
 
 	return res, nil
 }
+func (s *DrillSubmissionServer) InsertDrillSubmission(
+	ctx context.Context,
+	req *connect.Request[drill_submission_v1.InsertDrillSubmissionRequest],
+) (*connect.Response[drill_submission_v1.InsertDrillSubmissionResponse], error) {
+	hex_id := drill_submission.InsertDrillSubmission(s.ctx, req.Msg.DrillSubmission)
+	res := connect.NewResponse(&drill_submission_v1.InsertDrillSubmissionResponse{
+		HexId: hex_id,
+	})
+	return res, nil
+}
 
 func (s *DrillSubmissionServer) GetUserDrillSubmissions(
 	ctx context.Context,

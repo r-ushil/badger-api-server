@@ -12,10 +12,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/genproto/googleapis/type/datetime"
+
+	drill_submission_v1 "badger-api/gen/drill_submission/v1"
 )
 
 type DrillSubmission struct {
-	DrillSubmissionId string    `bson:"_id"`
+	DrillSubmissionId string    `bson:"_id,omitempty"`
 	UserId            string    `bson:"user_id"`
 	DrillId           string    `bson:"drill_id"`
 	BucketUrl         string    `bson:"bucket_url"`
@@ -63,6 +65,35 @@ func (d *DrillSubmission) GetProcessingStatus() string {
 
 func (d *DrillSubmission) GetDrillScore() uint32 {
 	return d.DrillScore
+}
+
+func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_submission_v1.DrillSubmission) string {
+	col := s.GetCollection("drill_submissions")
+
+	data := DrillSubmission{
+		UserId:    drill_submission.UserId,
+		DrillId:   drill_submission.DrillId,
+		BucketUrl: drill_submission.BucketUrl,
+		Timestamp: time.Date(
+			int(drill_submission.Timestamp.Year),
+			time.Month(drill_submission.Timestamp.Month),
+			int(drill_submission.Timestamp.Day),
+			int(drill_submission.Timestamp.Hours),
+			int(drill_submission.Timestamp.Minutes),
+			int(drill_submission.Timestamp.Seconds),
+			int(drill_submission.Timestamp.Nanos),
+			time.UTC),
+		ProcessingStatus: drill_submission.ProcessingStatus,
+		DrillScore:       drill_submission.DrillScore,
+	}
+
+	result, err := col.InsertOne(s.GetMongoContext(), data)
+
+	if err != nil {
+		panic(err)
+	}
+	print(result.InsertedID.(primitive.ObjectID).Hex())
+	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {
