@@ -147,16 +147,10 @@ func GetDrillSubmission(s *server.ServerContext, hexId string) (*DrillSubmission
 	return &drill_submission, nil
 }
 
-func GetUserDrillSubmissions(s *server.ServerContext, hexUserId string) []DrillSubmission {
+func GetUserDrillSubmissions(s *server.ServerContext, userId string) []DrillSubmission {
 	col := s.GetCollection("drill_submissions")
 
-	objectId, idErr := primitive.ObjectIDFromHex(hexUserId)
-
-	if idErr != nil {
-		panic(idErr)
-	}
-
-	query := bson.D{{Key: "user_id", Value: objectId}}
+	query := bson.D{{Key: "user_id", Value: userId}}
 
 	cur, err_find := col.Find(s.GetMongoContext(), query)
 
