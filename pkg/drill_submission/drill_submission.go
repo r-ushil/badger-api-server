@@ -4,6 +4,7 @@ import (
 	"badger-api/pkg/server"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -12,6 +13,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/genproto/googleapis/type/datetime"
+
+	"io/ioutil"
+	"net/http"
+	"os"
 
 	drill_submission_v1 "badger-api/gen/drill_submission/v1"
 )
@@ -93,7 +98,28 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 		panic(err)
 	}
 	print(result.InsertedID.(primitive.ObjectID).Hex())
+
+	print(ProcessDrillSubmission(data.BucketUrl))
+
 	return result.InsertedID.(primitive.ObjectID).Hex()
+}
+
+func ProcessDrillSubmission(bucketUrl string) string {
+
+	var requestUrl = "https://helloworld-6la2hzpokq-ew.a.run.app/?name=" + bucketUrl
+	response, err := http.Get(requestUrl)
+
+	if err != nil {
+		fmt.Print(err.Error())
+		os.Exit(1)
+	}
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(responseData)
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {
