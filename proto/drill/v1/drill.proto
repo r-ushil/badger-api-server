@@ -10,4 +10,5 @@ message Drill {
   string thumbnail_url = 5;
   repeated string skills = 6;
   string video_url = 7;
+  int32 duration = 8;
 }

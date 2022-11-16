@@ -17,8 +17,9 @@ type Drill struct {
 	Description  string   `bson:"description"`
 	Instructions string   `bson:"instructions"`
 	ThumbnailUrl string   `bson:"thumbnail_url"`
-	Skills 		 []string `bson:"skills"`
+	Skills       []string `bson:"skills"`
 	VideoUrl     string   `bson:"video_url"`
+	Duration     int32    `bson:"duration"`
 }
 
 func (d *Drill) GetId() string {
@@ -49,6 +50,9 @@ func (d *Drill) GetVideoUrl() string {
 	return d.VideoUrl
 }
 
+func (d *Drill) GetDuration() int32 {
+	return d.Duration
+}
 
 func GetDrills(s *server.ServerContext) []Drill {
 	col := s.GetCollection("drills")

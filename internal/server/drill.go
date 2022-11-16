@@ -41,6 +41,7 @@ func (s *DrillServer) GetDrill(
 			ThumbnailUrl:     d.GetThumbnailUrl(),
 			Skills:           d.GetSkills(),
 			VideoUrl:         d.GetVideoUrl(),
+			Duration:         d.GetDuration(),
 		},
 	})
 
@@ -64,6 +65,7 @@ func (s *DrillServer) GetDrills(
 			ThumbnailUrl:     drill.GetThumbnailUrl(),
 			Skills:           drill.GetSkills(),
 			VideoUrl:         drill.GetVideoUrl(),
+			Duration:         drill.GetDuration(),
 		})
 	}
 
