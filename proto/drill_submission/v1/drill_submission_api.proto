@@ -5,9 +5,18 @@ package drill_submission.v1;
 import "drill_submission/v1/drill_submission.proto";
 
 service DrillSubmissionService {
+    rpc InsertDrillSubmission(InsertDrillSubmissionRequest) returns (InsertDrillSubmissionResponse) {}
     rpc GetDrillSubmission(GetDrillSubmissionRequest) returns (GetDrillSubmissionResponse) {}
     rpc GetDrillSubmissions(GetDrillSubmissionsRequest) returns (GetDrillSubmissionsResponse) {}
     rpc GetUserDrillSubmissions(GetUserDrillSubmissionsRequest) returns (GetUserDrillSubmissionsResponse) {}
+}
+
+message InsertDrillSubmissionRequest {
+    DrillSubmission drill_submission = 1;
+}
+
+message InsertDrillSubmissionResponse {
+    string hex_id = 1;
 }
   
 message GetDrillSubmissionRequest {
