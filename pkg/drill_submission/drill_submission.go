@@ -121,8 +121,8 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 		panic(id_err)
 	}
 
-	filter := bson.D{{"_id", id}}
-	update := bson.D{{"$set", bson.D{{"drill_score", 5}, {"processing_status", "Done"}}}} // TODO: replace with score from microservice
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: 5}, {Key: "processing_status", Value: "Done"}}}} // TODO: replace with score from microservice
 	_, update_err := col.UpdateOne(context.TODO(), filter, update)
 	if update_err != nil {
 		panic(update_err)
