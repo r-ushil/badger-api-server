@@ -102,7 +102,7 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 
 func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) int32 {
 
-	var requestUrl = "https://helloworld-6la2hzpokq-ew.a.run.app/?name=" + bucketUrl
+	var requestUrl = "https://helloworld-6la2hzpokq-ew.a.run.app/?url=" + bucketUrl
 	response, get_err := http.Get(requestUrl)
 
 	if get_err != nil {
