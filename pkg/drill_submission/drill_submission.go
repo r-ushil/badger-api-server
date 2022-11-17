@@ -4,7 +4,6 @@ import (
 	"badger-api/pkg/server"
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -16,7 +15,6 @@ import (
 
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	drill_submission_v1 "badger-api/gen/drill_submission/v1"
 )
@@ -99,27 +97,38 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 	}
 	print(result.InsertedID.(primitive.ObjectID).Hex())
 
-	print(ProcessDrillSubmission(data.BucketUrl))
-
 	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
-func ProcessDrillSubmission(bucketUrl string) string {
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) int32 {
 
 	var requestUrl = "https://helloworld-6la2hzpokq-ew.a.run.app/?name=" + bucketUrl
-	response, err := http.Get(requestUrl)
+	response, get_err := http.Get(requestUrl)
 
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
+	if get_err != nil {
+		panic(get_err)
 	}
 
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
+	responseData, io_err := ioutil.ReadAll(response.Body)
+	print(string(responseData))
+	if io_err != nil {
+		panic(io_err)
 	}
 
-	return string(responseData)
+	col := s.GetCollection("drill_submissions")
+	id, id_err := primitive.ObjectIDFromHex(submissionId)
+	if id_err != nil {
+		panic(id_err)
+	}
+
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", bson.D{{"drill_score", 5}, {"processing_status", "Done"}}}} // TODO: replace with score from microservice
+	_, update_err := col.UpdateOne(context.TODO(), filter, update)
+	if update_err != nil {
+		panic(update_err)
+	}
+
+	return int32(5) // replace with response data
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {

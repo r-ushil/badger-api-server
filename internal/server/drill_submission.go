@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/bufbuild/connect-go"
 
@@ -25,19 +24,22 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	stream *connect.ServerStream[drill_submission_v1.SubscribeToDrillSubmissionResponse],
 ) error {
 
-	for {
-		d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
-		if err != nil {
-			panic(err)
-		}
-		if d.ProcessingStatus == "Done" {
-			res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
-				DrillScore: int32(d.DrillScore),
-			}
-			return stream.Send(res)
-		}
-		time.Sleep(10)
+	d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
+	if err != nil {
+		panic(err)
+	}
 
+	if d.ProcessingStatus != "Done" {
+		score := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl)
+		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
+			DrillScore: score, //TODO: replace with score from microservice
+		}
+		return stream.Send(res)
+	} else {
+		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
+			DrillScore: int32(d.DrillScore),
+		}
+		return stream.Send(res)
 	}
 }
 
