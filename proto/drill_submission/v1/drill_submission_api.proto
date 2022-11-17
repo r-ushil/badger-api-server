@@ -9,6 +9,15 @@ service DrillSubmissionService {
     rpc GetDrillSubmission(GetDrillSubmissionRequest) returns (GetDrillSubmissionResponse) {}
     rpc GetDrillSubmissions(GetDrillSubmissionsRequest) returns (GetDrillSubmissionsResponse) {}
     rpc GetUserDrillSubmissions(GetUserDrillSubmissionsRequest) returns (GetUserDrillSubmissionsResponse) {}
+    rpc SubscribeToDrillSubmission(SubscribeToDrillSubmissionRequest) returns (stream SubscribeToDrillSubmissionResponse) {} 
+}
+
+message SubscribeToDrillSubmissionRequest {
+    string hex_id = 1;
+}
+
+message SubscribeToDrillSubmissionResponse {
+    DrillSubmission drill_submission = 1;
 }
 
 message InsertDrillSubmissionRequest {
