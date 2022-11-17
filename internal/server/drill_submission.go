@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/bufbuild/connect-go"
 
@@ -18,11 +19,26 @@ type DrillSubmissionServer struct {
 	ctx *server.ServerContext
 }
 
-func (s *DrillSubmissionServer) SubscribeToDrillSubmissionRequest(
+func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.SubscribeToDrillSubmissionRequest],
-) (*connect.Response[drill_submission_v1.SubscribeToDrillSubmissionResponse], error) {
-	return nil, nil
+	stream *connect.ServerStream[drill_submission_v1.SubscribeToDrillSubmissionResponse],
+) error {
+
+	for {
+		d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
+		if err != nil {
+			panic(err)
+		}
+		if d.ProcessingStatus == "Done" {
+			res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
+				DrillScore: int32(d.DrillScore),
+			}
+			return stream.Send(res)
+		}
+		time.Sleep(1)
+
+	}
 }
 
 func (s *DrillSubmissionServer) GetDrillSubmission(

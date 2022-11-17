@@ -13,11 +13,11 @@ service DrillSubmissionService {
 }
 
 message SubscribeToDrillSubmissionRequest {
-    string hex_id = 1;
+    string drill_submission_id = 1;
 }
 
 message SubscribeToDrillSubmissionResponse {
-    DrillSubmission drill_submission = 1;
+    int32 drill_score = 1;
 }
 
 message InsertDrillSubmissionRequest {
