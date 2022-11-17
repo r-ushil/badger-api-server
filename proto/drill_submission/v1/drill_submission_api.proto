@@ -18,6 +18,8 @@ message SubscribeToDrillSubmissionRequest {
 
 message SubscribeToDrillSubmissionResponse {
     int32 drill_score = 1;
+    string advice1 = 2;
+    string advice2 = 3;
 }
 
 message InsertDrillSubmissionRequest {

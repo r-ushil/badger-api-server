@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -95,12 +97,10 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 	if err != nil {
 		panic(err)
 	}
-	print(result.InsertedID.(primitive.ObjectID).Hex())
-
 	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
-func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) int32 {
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (int32, string, string) {
 
 	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/?url=" + bucketUrl
 	response, get_err := http.Get(requestUrl)
@@ -110,10 +110,17 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 	}
 
 	responseData, io_err := ioutil.ReadAll(response.Body)
-	print(string(responseData))
 	if io_err != nil {
 		panic(io_err)
 	}
+
+	split_response_data := strings.Split(string(responseData), ",")
+	score, atoi_err := strconv.Atoi(split_response_data[0])
+	if atoi_err != nil {
+		panic(atoi_err)
+	}
+	advice1 := split_response_data[1]
+	advice2 := split_response_data[2]
 
 	col := s.GetCollection("drill_submissions")
 	id, id_err := primitive.ObjectIDFromHex(submissionId)
@@ -122,13 +129,13 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 	}
 
 	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: 5}, {Key: "processing_status", Value: "Done"}}}} // TODO: replace with score from microservice
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: int32(score)}, {Key: "processing_status", Value: "Done"}}}} // TODO: replace with score from microservice
 	_, update_err := col.UpdateOne(context.TODO(), filter, update)
 	if update_err != nil {
 		panic(update_err)
 	}
 
-	return int32(5) // replace with response data
+	return int32(score), advice1, advice2
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {

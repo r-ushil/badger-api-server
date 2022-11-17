@@ -30,14 +30,18 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	}
 
 	if d.ProcessingStatus != "Done" {
-		score := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl)
+		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl)
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
-			DrillScore: score, //TODO: replace with score from microservice
+			DrillScore: score,
+			Advice1:    advice1,
+			Advice2:    advice2,
 		}
 		return stream.Send(res)
 	} else {
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
 			DrillScore: int32(d.DrillScore),
+			Advice1:    "",
+			Advice2:    "",
 		}
 		return stream.Send(res)
 	}
