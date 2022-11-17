@@ -18,6 +18,13 @@ type DrillSubmissionServer struct {
 	ctx *server.ServerContext
 }
 
+func (s *DrillSubmissionServer) SubscribeToDrillSubmissionRequest(
+	ctx context.Context,
+	req *connect.Request[drill_submission_v1.SubscribeToDrillSubmissionRequest],
+) (*connect.Response[drill_submission_v1.SubscribeToDrillSubmissionResponse], error) {
+	return nil, nil
+}
+
 func (s *DrillSubmissionServer) GetDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.GetDrillSubmissionRequest],
