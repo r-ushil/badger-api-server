@@ -106,7 +106,9 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 
 func ProcessDrillSubmission(bucketUrl string) string {
 
-	var requestUrl = "https://helloworld-6la2hzpokq-ew.a.run.app/?name=" + bucketUrl
+	// update status to processing
+
+	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/?name=" + bucketUrl
 	response, err := http.Get(requestUrl)
 
 	if err != nil {
@@ -118,6 +120,8 @@ func ProcessDrillSubmission(bucketUrl string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// update status to complete
 
 	return string(responseData)
 }
