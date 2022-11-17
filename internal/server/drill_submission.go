@@ -36,7 +36,7 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 			}
 			return stream.Send(res)
 		}
-		time.Sleep(1)
+		time.Sleep(10)
 
 	}
 }
