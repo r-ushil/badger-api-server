@@ -15,6 +15,9 @@ type Person struct {
 	Id         string `bson:"_id"`
 	Score      uint32 `bson:"score"`
 	FirebaseId string `bson:"firebase_id"`
+	PowerScore uint32 `bson:"power_score"`
+	TimingScore uint32 `bson:"timing_score"`
+	AgilityScore uint32 `bson:"agility_score"`
 }
 
 func (d *Person) GetId() string {
@@ -27,6 +30,18 @@ func (d *Person) GetScore() uint32 {
 
 func (d *Person) GetFirebaseId() string {
 	return d.FirebaseId
+}
+
+func (d *Person) GetPowerScore() uint32 {
+	return d.PowerScore
+}
+
+func (d *Person) GetTimingScore() uint32 {
+	return d.TimingScore
+}
+
+func (d *Person) GetAgilityScore() uint32 {
+	return d.AgilityScore
 }
 
 func GetPeople(s *server.ServerContext) []Person {

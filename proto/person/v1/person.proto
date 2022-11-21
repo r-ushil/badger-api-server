@@ -6,4 +6,7 @@ message Person {
   string user_id = 1;
   uint32 user_score = 2;
   string firebase_id = 3;
+  uint32 user_power_score = 4;
+  uint32 user_timing_score = 5;
+  uint32 user_agility_score = 6;
 }
