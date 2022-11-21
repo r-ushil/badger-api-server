@@ -36,6 +36,9 @@ func (s *PersonServer) GetPerson(
 			UserId:     d.GetId(),
 			UserScore:  d.GetScore(),
 			FirebaseId: d.GetFirebaseId(),
+			UserPowerScore: d.GetPowerScore(),
+			UserTimingScore: d.GetTimingScore(),
+			UserAgilityScore: d.GetAgilityScore(),
 		},
 	})
 
@@ -55,6 +58,9 @@ func (s *PersonServer) GetPeople(
 			UserId:     person.GetId(),
 			UserScore:  person.GetScore(),
 			FirebaseId: person.GetFirebaseId(),
+			UserPowerScore: person.GetPowerScore(),
+			UserTimingScore: person.GetTimingScore(),
+			UserAgilityScore: person.GetAgilityScore(),
 		})
 	}
 
