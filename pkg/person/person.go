@@ -7,16 +7,15 @@ import (
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Person struct {
-	Id         string `bson:"_id"`
-	Score      uint32 `bson:"score"`
-	FirebaseId string `bson:"firebase_id"`
-	PowerScore uint32 `bson:"power_score"`
-	TimingScore uint32 `bson:"timing_score"`
+	Id           string `bson:"_id"`
+	Score        uint32 `bson:"score"`
+	FirebaseId   string `bson:"firebase_id"`
+	PowerScore   uint32 `bson:"power_score"`
+	TimingScore  uint32 `bson:"timing_score"`
 	AgilityScore uint32 `bson:"agility_score"`
 }
 
@@ -68,13 +67,7 @@ func GetPerson(s *server.ServerContext, hexId string) (*Person, error) {
 	col := s.GetCollection("people")
 	log.Println("Getting person collection done. ")
 
-	objectId, idErr := primitive.ObjectIDFromHex(hexId)
-
-	if idErr != nil {
-		panic(idErr)
-	}
-
-	query := bson.D{{Key: "firebase_id", Value: objectId}}
+	query := bson.D{{Key: "firebaseid", Value: hexId}}
 
 	var person Person
 	log.Println("Getting person document. ")
