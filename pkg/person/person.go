@@ -74,7 +74,7 @@ func GetPerson(s *server.ServerContext, hexId string) (*Person, error) {
 		panic(idErr)
 	}
 
-	query := bson.D{{Key: "_id", Value: objectId}}
+	query := bson.D{{Key: "firebase_id", Value: objectId}}
 
 	var person Person
 	log.Println("Getting person document. ")
