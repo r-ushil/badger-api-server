@@ -18,6 +18,35 @@ type DrillSubmissionServer struct {
 	ctx *server.ServerContext
 }
 
+func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
+	ctx context.Context,
+	req *connect.Request[drill_submission_v1.SubscribeToDrillSubmissionRequest],
+	stream *connect.ServerStream[drill_submission_v1.SubscribeToDrillSubmissionResponse],
+) error {
+
+	d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
+	if err != nil {
+		panic(err)
+	}
+
+	if d.ProcessingStatus != "Done" {
+		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl)
+		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
+			DrillScore: score,
+			Advice1:    advice1,
+			Advice2:    advice2,
+		}
+		return stream.Send(res)
+	} else {
+		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
+			DrillScore: int32(d.DrillScore),
+			Advice1:    "",
+			Advice2:    "",
+		}
+		return stream.Send(res)
+	}
+}
+
 func (s *DrillSubmissionServer) GetDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.GetDrillSubmissionRequest],

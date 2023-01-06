@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -12,6 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/genproto/googleapis/type/datetime"
+
+	"io/ioutil"
+	"net/http"
 
 	drill_submission_v1 "badger-api/gen/drill_submission/v1"
 )
@@ -92,8 +97,45 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 	if err != nil {
 		panic(err)
 	}
-	print(result.InsertedID.(primitive.ObjectID).Hex())
 	return result.InsertedID.(primitive.ObjectID).Hex()
+}
+
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (int32, string, string) {
+
+	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/cover-drive-drill?video_object_name=" + bucketUrl
+	response, get_err := http.Get(requestUrl)
+
+	if get_err != nil {
+		panic(get_err)
+	}
+
+	responseData, io_err := ioutil.ReadAll(response.Body)
+	if io_err != nil {
+		panic(io_err)
+	}
+
+	split_response_data := strings.Split(string(responseData), ",")
+	score, atoi_err := strconv.Atoi(split_response_data[0])
+	if atoi_err != nil {
+		panic(atoi_err)
+	}
+	advice1 := split_response_data[1]
+	advice2 := split_response_data[2]
+
+	col := s.GetCollection("drill_submissions")
+	id, id_err := primitive.ObjectIDFromHex(submissionId)
+	if id_err != nil {
+		panic(id_err)
+	}
+
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: int32(score)}, {Key: "processing_status", Value: "Done"}}}} // TODO: replace with score from microservice
+	_, update_err := col.UpdateOne(context.TODO(), filter, update)
+	if update_err != nil {
+		panic(update_err)
+	}
+
+	return int32(score), advice1, advice2
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {
@@ -147,16 +189,10 @@ func GetDrillSubmission(s *server.ServerContext, hexId string) (*DrillSubmission
 	return &drill_submission, nil
 }
 
-func GetUserDrillSubmissions(s *server.ServerContext, hexUserId string) []DrillSubmission {
+func GetUserDrillSubmissions(s *server.ServerContext, userId string) []DrillSubmission {
 	col := s.GetCollection("drill_submissions")
 
-	objectId, idErr := primitive.ObjectIDFromHex(hexUserId)
-
-	if idErr != nil {
-		panic(idErr)
-	}
-
-	query := bson.D{{Key: "user_id", Value: objectId}}
+	query := bson.D{{Key: "user_id", Value: userId}}
 
 	cur, err_find := col.Find(s.GetMongoContext(), query)
 
