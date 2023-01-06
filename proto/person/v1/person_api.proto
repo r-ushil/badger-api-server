@@ -5,8 +5,17 @@ package person.v1;
 import "person/v1/person.proto";
 
 service PersonService {
+  rpc InsertNewUser(InsertNewUserRequest) returns (InsertNewUserResponse) {}
   rpc GetPerson(GetPersonRequest) returns (GetPersonResponse) {}
   rpc GetPeople(GetPeopleRequest) returns (GetPeopleResponse) {}
+}
+
+message InsertNewUserRequest {
+  string firebase_id = 1;
+}
+
+message InsertNewUserResponse {
+  string hex_id = 1;
 }
 
 message GetPersonRequest {

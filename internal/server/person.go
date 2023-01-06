@@ -45,6 +45,17 @@ func (s *PersonServer) GetPerson(
 	return res, nil
 }
 
+func (s *PersonServer) InsertNewUser(
+	ctx context.Context,
+	req *connect.Request[person_v1.InsertNewUserRequest],
+) (*connect.Response[person_v1.InsertNewUserResponse], error) {
+	hex_id := person.InsertNewUser(s.ctx, req.Msg.FirebaseId)
+	res := connect.NewResponse(&person_v1.InsertNewUserResponse{
+		HexId: hex_id,
+	})
+	return res, nil
+}
+
 func (s *PersonServer) GetPeople(
 	ctx context.Context,
 	req *connect.Request[person_v1.GetPeopleRequest],

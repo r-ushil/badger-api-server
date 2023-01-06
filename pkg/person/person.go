@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -86,4 +87,24 @@ func GetPerson(s *server.ServerContext, hexId string) (*Person, error) {
 	log.Println(person)
 
 	return &person, nil
+}
+
+func InsertNewUser(s *server.ServerContext, firebase_id string) string {
+	col := s.GetCollection("people")
+
+	data := Person{
+		FirebaseId: firebase_id,
+		Score: 0,
+		PowerScore: 0,
+		AgilityScore: 0,
+		TimingScore: 0,
+	}
+
+	result, err := col.InsertOne(s.GetMongoContext(), data)
+
+	if err != nil {
+		panic(err)
+	}
+	print(result.InsertedID.(primitive.ObjectID).Hex())
+	return result.InsertedID.(primitive.ObjectID).Hex()
 }
