@@ -68,7 +68,7 @@ func GetPerson(s *server.ServerContext, hexId string) (*Person, error) {
 	col := s.GetCollection("people")
 	log.Println("Getting person collection done. ")
 
-	query := bson.D{{Key: "firebaseid", Value: hexId}}
+	query := bson.D{{Key: "firebase_id", Value: hexId}}
 
 	var person Person
 	log.Println("Getting person document. ")
@@ -93,11 +93,11 @@ func InsertNewUser(s *server.ServerContext, firebase_id string) string {
 	col := s.GetCollection("people")
 
 	data := Person{
-		FirebaseId: firebase_id,
-		Score: 0,
-		PowerScore: 0,
+		FirebaseId:   firebase_id,
+		Score:        0,
+		PowerScore:   0,
 		AgilityScore: 0,
-		TimingScore: 0,
+		TimingScore:  0,
 	}
 
 	result, err := col.InsertOne(s.GetMongoContext(), data)
