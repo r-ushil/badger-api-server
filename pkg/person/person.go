@@ -68,7 +68,7 @@ func GetPerson(s *server.ServerContext, hexId string) (*Person, error) {
 	col := s.GetCollection("people")
 	log.Println("Getting person collection done. ")
 
-	query := bson.D{{Key: "firebaseid", Value: hexId}}
+	query := bson.D{{Key: "firebase_id", Value: hexId}}
 
 	var person Person
 	log.Println("Getting person document. ")
