@@ -100,7 +100,22 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
-func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (int32, string, string) {
+func GetUserScores(s *server.ServerContext, userId string) (uint32, uint32) {
+
+	var userSubmissions = GetUserDrillSubmissions(s, userId)
+	var coverDriveScore = 0
+	var coverDrives = 0
+	for _, submission := range userSubmissions {
+		if submission.DrillId == "6352414e50c7d61db5d52861" {
+			coverDrives++
+			coverDriveScore += int(submission.DrillScore)
+		} 
+	//TODO: katchet board
+	}
+	return uint32(coverDriveScore), 0
+}
+
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (uint32, string, string) {
 
 	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/cover-drive-drill?video_object_name=" + bucketUrl
 	response, get_err := http.Get(requestUrl)
@@ -129,13 +144,13 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 	}
 
 	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: int32(score)}, {Key: "processing_status", Value: "Done"}}}} // TODO: replace with score from microservice
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: uint32(score)}, {Key: "processing_status", Value: "Done"}}}}
 	_, update_err := col.UpdateOne(context.TODO(), filter, update)
 	if update_err != nil {
 		panic(update_err)
 	}
 
-	return int32(score), advice1, advice2
+	return uint32(score), advice1, advice2
 }
 
 func GetDrillSubmissions(s *server.ServerContext) []DrillSubmission {

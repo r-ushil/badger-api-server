@@ -39,7 +39,7 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 		return stream.Send(res)
 	} else {
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
-			DrillScore: int32(d.DrillScore),
+			DrillScore: uint32(d.DrillScore),
 			Advice1:    "",
 			Advice2:    "",
 		}
@@ -71,6 +71,22 @@ func (s *DrillSubmissionServer) GetDrillSubmission(
 			ProcessingStatus:  d.GetProcessingStatus(),
 			DrillScore:        d.GetDrillScore(),
 		},
+	})
+
+	return res, nil
+}
+
+func (s *DrillSubmissionServer) GetUserScores(
+	ctx context.Context,
+	req *connect.Request[drill_submission_v1.GetUserScoresRequest],
+) (*connect.Response[drill_submission_v1.GetUserScoresResponse], error) {
+	log.Println("Getting user scores")
+
+	coverDriveScore, katchetBoardScore := drill_submission.GetUserScores(s.ctx, req.Msg.UserId)
+
+	res := connect.NewResponse(&drill_submission_v1.GetUserScoresResponse{
+		CoverDriveScore: coverDriveScore,
+		KatchetBoardScore: katchetBoardScore,
 	})
 
 	return res, nil
