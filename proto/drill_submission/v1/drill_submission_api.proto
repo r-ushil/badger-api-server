@@ -58,6 +58,6 @@ message GetUserScoresRequest {
 }
   
 message GetUserScoresResponse {
-    uint32 cover_drive_score = 1;
-    uint32 katchet_board_score = 2;
+    float cover_drive_score = 1;
+    float katchet_board_score = 2;
 }

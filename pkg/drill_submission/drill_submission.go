@@ -100,7 +100,7 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
-func GetUserScores(s *server.ServerContext, userId string) (uint32, uint32) {
+func GetUserScores(s *server.ServerContext, userId string) (float32, float32) {
 
 	var userSubmissions = GetUserDrillSubmissions(s, userId)
 	var coverDriveScore = 0
@@ -112,7 +112,7 @@ func GetUserScores(s *server.ServerContext, userId string) (uint32, uint32) {
 		} 
 	//TODO: katchet board
 	}
-	return uint32(coverDriveScore), 0
+	return float32(coverDriveScore/coverDrives), 90.00
 }
 
 func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (uint32, string, string) {
