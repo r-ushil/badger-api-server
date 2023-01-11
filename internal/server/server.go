@@ -23,6 +23,8 @@ func NewServer(ctx *server.ServerContext) BadgerServer {
 	RegisterPersonService(mux, ctx)
 	RegisterDrillSubmissionService(mux, ctx)
 
+	RegisterBattingDrillService(mux, ctx)
+
 	return BadgerServer{
 		mux,
 	}
