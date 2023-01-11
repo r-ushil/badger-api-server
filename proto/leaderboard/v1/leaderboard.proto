@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package leaderboard.v1;
+
+message Player {
+    string id = 1;
+    string name = 2;
+    uint32 score = 3;
+}

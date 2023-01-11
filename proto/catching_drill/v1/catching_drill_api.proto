@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package catching_drill.v1;
+
+service CatchingDrillService {
+    rpc SubmitCatchingDrill(SubmitCatchingDrillRequest) returns (SubmitCatchingDrillResponse);
+    rpc OnCatchingDrillProcessingComplete(OnCatchingDrillProcessingCompleteRequest)
+        returns (OnCatchingDrillProcessingCompleteResponse);
+}
+
+message SubmitCatchingDrillRequest {
+    string video_object_name = 1;
+}
+
+message SubmitCatchingDrillResponse {
+    string submission_id = 1;
+}
+
+message OnCatchingDrillProcessingCompleteRequest {
+    uint32 score = 1;
+}
+
+message OnCatchingDrillProcessingCompleteResponse {}

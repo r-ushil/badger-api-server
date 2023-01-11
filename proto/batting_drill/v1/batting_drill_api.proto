@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package batting_drill.v1;
+
+import "batting_drill/v1/batting_drill.proto";
+
+service BattingDrillService {
+    rpc SubmitBattingDrill(SubmitBattingDrillRequest) returns (SubmitBattingDrillResponse);
+    rpc OnBattingDrillProcessingComplete(OnBattingDrillProcessingCompleteRequest)
+        returns (OnBattingDrillProcessingCompleteResponse);
+}
+
+message SubmitBattingDrillRequest {
+    string video_object_name = 1;
+}
+
+message SubmitBattingDrillResponse {
+    string submission_id = 1;
+}
+
+message OnBattingDrillProcessingCompleteRequest {
+    uint32 score = 1;
+    repeated BattingAdvice advice = 2;
+}
+
+message OnBattingDrillProcessingCompleteResponse {}
