@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package batting_drill.v1;
+
+message BattingAdvice {
+    string message = 1;
+}

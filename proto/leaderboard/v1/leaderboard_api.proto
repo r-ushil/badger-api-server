@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package leaderboard.v1;
+
+import "leaderboard/v1/leaderboard.proto";
+
+service LeaderboardService {
+    rpc GetTopPlayers(GetTopPlayersRequest) returns (GetTopPlayersResponse);
+    rpc GetMyScore(GetMyScoreRequest) returns (GetMyScoreResponse);
+    rpc GetMyPublicName(GetMyPublicNameRequest) returns (GetMyPublicNameResponse);
+    rpc SetMyPublicName(SetMyPublicNameRequest) returns (SetMyPublicNameResponse);
+}
+
+message GetTopPlayersRequest {
+    uint32 count = 1;
+}
+
+message GetTopPlayersResponse {
+    repeated Player top_players = 1;
+}
+
+message GetMyScoreRequest {}
+
+message GetMyScoreResponse {
+    uint32 batting_score = 1;
+    uint32 catching_score = 2;
+    uint32 bowling_score = 3;
+
+    uint32 total_batting_submissions = 4;
+    uint32 total_catching_submissions = 5;
+    uint32 total_bowling_submissions = 6;
+}
+
+message GetMyPublicNameRequest {}
+
+message GetMyPublicNameResponse {
+    string name = 1;
+}
+
+message SetMyPublicNameRequest {
+    string name = 1;
+}
+
+message SetMyPublicNameResponse {}
