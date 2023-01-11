@@ -106,11 +106,13 @@ func GetUserScores(s *server.ServerContext, userId string) (float32, float32) {
 	var coverDriveScore = 0
 	var coverDrives = 0
 	for _, submission := range userSubmissions {
-		if submission.DrillId == "6352414e50c7d61db5d52861" {
-			coverDrives++
-			coverDriveScore += int(submission.DrillScore)
-		} 
-	//TODO: katchet board
+		if submission.ProcessingStatus == "Done" {
+			if submission.DrillId == "6352414e50c7d61db5d52861" {
+				coverDrives++
+				coverDriveScore += int(submission.DrillScore)
+			} 
+			//TODO: katchet board
+		}
 	}
 	return float32(coverDriveScore/coverDrives), 90.00
 }
