@@ -25,6 +25,7 @@ func NewServer(ctx *server.ServerContext) BadgerServer {
 
 	RegisterBattingDrillService(mux, ctx)
 	RegisterCatchingDrillService(mux, ctx)
+	RegisterLeaderboardService(mux, ctx)
 
 	return BadgerServer{
 		mux,
