@@ -10,6 +10,7 @@ service DrillSubmissionService {
     rpc GetDrillSubmissions(GetDrillSubmissionsRequest) returns (GetDrillSubmissionsResponse) {}
     rpc GetUserDrillSubmissions(GetUserDrillSubmissionsRequest) returns (GetUserDrillSubmissionsResponse) {}
     rpc SubscribeToDrillSubmission(SubscribeToDrillSubmissionRequest) returns (stream SubscribeToDrillSubmissionResponse) {} 
+    rpc GetUserScores(GetUserScoresRequest) returns (GetUserScoresResponse) {}
 }
 
 message SubscribeToDrillSubmissionRequest {
@@ -17,7 +18,7 @@ message SubscribeToDrillSubmissionRequest {
 }
 
 message SubscribeToDrillSubmissionResponse {
-    int32 drill_score = 1;
+    uint32 drill_score = 1;
     string advice1 = 2;
     string advice2 = 3;
 }
@@ -50,4 +51,13 @@ message GetDrillSubmissionsRequest {}
 
 message GetDrillSubmissionsResponse {
     repeated DrillSubmission drill_submissions = 1;
+}
+
+message GetUserScoresRequest {
+    string user_id = 1;
+}
+  
+message GetUserScoresResponse {
+    uint32 cover_drive_score = 1;
+    uint32 katchet_board_score = 2;
 }
