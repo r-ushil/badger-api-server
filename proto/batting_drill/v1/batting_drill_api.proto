@@ -19,8 +19,9 @@ message SubmitBattingDrillResponse {
 }
 
 message OnBattingDrillProcessingCompleteRequest {
-    uint32 score = 1;
-    repeated BattingAdvice advice = 2;
+    string submission_id = 1;
+    uint32 score = 2;
+    repeated BattingAdvice advice = 3;
 }
 
 message OnBattingDrillProcessingCompleteResponse {}

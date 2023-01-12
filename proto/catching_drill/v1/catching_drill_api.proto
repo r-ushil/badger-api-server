@@ -17,7 +17,8 @@ message SubmitCatchingDrillResponse {
 }
 
 message OnCatchingDrillProcessingCompleteRequest {
-    uint32 score = 1;
+    string submission_id = 1;
+    uint32 score = 2;
 }
 
 message OnCatchingDrillProcessingCompleteResponse {}
