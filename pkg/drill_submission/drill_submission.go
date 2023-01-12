@@ -1,6 +1,8 @@
 package drill_submission
 
 import (
+	"badger-api/pkg/drill"
+	"badger-api/pkg/leaderboard"
 	"badger-api/pkg/server"
 	"context"
 	"errors"
@@ -72,11 +74,11 @@ func (d *DrillSubmission) GetDrillScore() uint32 {
 	return d.DrillScore
 }
 
-func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_submission_v1.DrillSubmission) string {
+func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_submission_v1.DrillSubmission, userId string) string {
 	col := s.GetCollection("drill_submissions")
 
 	data := DrillSubmission{
-		UserId:    drill_submission.UserId,
+		UserId:    userId, // drill_submission.UserId,
 		DrillId:   drill_submission.DrillId,
 		BucketUrl: drill_submission.BucketUrl,
 		Timestamp: time.Date(
@@ -110,16 +112,29 @@ func GetUserScores(s *server.ServerContext, userId string) (float32, float32) {
 			if submission.DrillId == "6352414e50c7d61db5d52861" {
 				coverDrives++
 				coverDriveScore += int(submission.DrillScore)
-			} 
+			}
 			//TODO: katchet board
 		}
 	}
-	return float32(coverDriveScore/coverDrives), 90.00
+	return float32(coverDriveScore / coverDrives), 90.00
 }
 
-func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string) (uint32, string, string) {
+const (
+	CATCHING_DRILL_ID = "Katchet Board"
+	BATTING_DRILL_ID  = "Cover Drive"
+)
 
-	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/cover-drive-drill?video_object_name=" + bucketUrl
+func getDrillUrl(drillId string) string {
+	if drillId == CATCHING_DRILL_ID {
+		return "catching-drill"
+	}
+
+	return "cover-drive-drill"
+}
+
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string, drillId string, userId string) (uint32, string, string) {
+
+	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/" + getDrillUrl(drillId) + "?video_object_name=" + bucketUrl
 	response, get_err := http.Get(requestUrl)
 
 	if get_err != nil {
@@ -144,6 +159,16 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 	if id_err != nil {
 		panic(id_err)
 	}
+
+	if drillId == CATCHING_DRILL_ID {
+		// Have a katchet board drill so update katchetboard drill score
+		drill.RegisterCatchingDrillResults(s, submissionId, uint32(score))
+	} else {
+		// Have cover drive drill so update cover drive score
+		drill.RegisterBattingDrillResults(s, submissionId, uint32(score))
+	}
+
+	leaderboard.UpdatePlayerLeaderboardScore(s, userId)
 
 	filter := bson.D{{Key: "_id", Value: id}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "drill_score", Value: uint32(score)}, {Key: "processing_status", Value: "Done"}}}}

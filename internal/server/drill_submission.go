@@ -10,6 +10,7 @@ import (
 	drill_submission_v1 "badger-api/gen/drill_submission/v1"
 	"badger-api/gen/drill_submission/v1/drill_submissionv1connect"
 
+	"badger-api/pkg/auth"
 	"badger-api/pkg/drill_submission"
 	"badger-api/pkg/server"
 )
@@ -18,11 +19,24 @@ type DrillSubmissionServer struct {
 	ctx *server.ServerContext
 }
 
+func withDefault(val string, def string) string {
+	if val == "" {
+		return def
+	}
+	return val
+}
+
 func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.SubscribeToDrillSubmissionRequest],
 	stream *connect.ServerStream[drill_submission_v1.SubscribeToDrillSubmissionResponse],
 ) error {
+	authHeader := req.Header().Get("authorization")
+	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
+
+	if err != nil {
+		return err
+	}
 
 	d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
 	if err != nil {
@@ -30,7 +44,9 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	}
 
 	if d.ProcessingStatus != "Done" {
-		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl)
+		drillId := withDefault(d.DrillId, "Cover Drive")
+
+		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl, drillId, userId)
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
 			DrillScore: score,
 			Advice1:    advice1,
@@ -85,7 +101,7 @@ func (s *DrillSubmissionServer) GetUserScores(
 	coverDriveScore, katchetBoardScore := drill_submission.GetUserScores(s.ctx, req.Msg.UserId)
 
 	res := connect.NewResponse(&drill_submission_v1.GetUserScoresResponse{
-		CoverDriveScore: coverDriveScore,
+		CoverDriveScore:   coverDriveScore,
 		KatchetBoardScore: katchetBoardScore,
 	})
 
@@ -123,7 +139,14 @@ func (s *DrillSubmissionServer) InsertDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.InsertDrillSubmissionRequest],
 ) (*connect.Response[drill_submission_v1.InsertDrillSubmissionResponse], error) {
-	hex_id := drill_submission.InsertDrillSubmission(s.ctx, req.Msg.DrillSubmission)
+	authHeader := req.Header().Get("authorization")
+	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+
+	hex_id := drill_submission.InsertDrillSubmission(s.ctx, req.Msg.DrillSubmission, userId)
 	res := connect.NewResponse(&drill_submission_v1.InsertDrillSubmissionResponse{
 		HexId: hex_id,
 	})
