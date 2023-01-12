@@ -19,7 +19,7 @@ type CatchingDrillSubmissionDoc struct {
 	VideoObjectName  string           `bson:"video_obj_name"`
 	Timestamp        time.Time        `bson:"timestamp"`
 	ProcessingStatus ProcessingStatus `bson:"processing_status"`
-	Score            float64          `bson:"score"`
+	Score            uint32           `bson:"score"`
 }
 
 func SubmitCatchingDrill(s *server.ServerContext, videoObjectName string, userId string) string {
