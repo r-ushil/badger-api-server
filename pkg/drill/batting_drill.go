@@ -56,13 +56,22 @@ func RegisterBattingDrillResults(s *server.ServerContext, submissionId string, s
 func CountBattingSubmissionsByUser(s *server.ServerContext, userId string) uint32 {
 	col := s.GetCollection(BattingDrillSubmissionCollection)
 
-	filter := bson.D{{
-		Key: "user_id",
-		Value: bson.D{{
-			Key:   "$eq",
-			Value: userId,
-		}},
-	}}
+	filter := bson.D{
+		{
+			Key: "user_id",
+			Value: bson.D{{
+				Key:   "$eq",
+				Value: userId,
+			}},
+		},
+		{
+			Key: "score",
+			Value: bson.D{{
+				Key:   "$ne",
+				Value: 0,
+			}},
+		},
+	}
 
 	count, err := col.CountDocuments(s.GetMongoContext(), filter)
 
@@ -82,10 +91,19 @@ func ComputeBattingScoreForUser(s *server.ServerContext, userId string) uint32 {
 
 	match_stage := bson.D{{
 		Key: "$match",
-		Value: bson.D{{
-			Key:   "user_id",
-			Value: userId,
-		}},
+		Value: bson.D{
+			{
+				Key:   "user_id",
+				Value: userId,
+			},
+			{
+				Key: "score",
+				Value: bson.D{{
+					Key:   "$ne",
+					Value: 0,
+				}},
+			},
+		},
 	}}
 	group_stage := bson.D{{
 		Key: "$group",
