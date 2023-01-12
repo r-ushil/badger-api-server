@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/auth"
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -80,6 +80,10 @@ func (s *ServerContext) GetCollection(collectionName string) *mongo.Collection {
 
 func (s *ServerContext) GetMongoContext() context.Context {
 	return context.Background()
+}
+
+func (s *ServerContext) GetFirebaseApp() *firebase.App {
+	return s.firebase_app
 }
 
 func (s *ServerContext) GetFirebaseAuth() *auth.Client {
