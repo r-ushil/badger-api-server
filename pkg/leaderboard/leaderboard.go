@@ -5,14 +5,14 @@ import (
 	"badger-api/pkg/server"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const LeaderboardOverallScoreCollection = "leaderboard_scores"
 
 type LeaderboardPlayerDoc struct {
-	UserId string `bson:"_id"`
+	Id     string `bson:"_id"`
+	UserId string `bson:"user_id"`
 	Name   string `bson:"name"`
 	Score  uint32 `bson:"score,truncate"`
 }
@@ -76,33 +76,36 @@ func GetTopPlayers(s *server.ServerContext, count int) []LeaderboardPlayer {
 	return leaderboard
 }
 
+func GetPlayerPublicName(s *server.ServerContext, userId string) string {
+	col := s.GetCollection(LeaderboardOverallScoreCollection)
+
+	var result LeaderboardPlayerDoc
+	err := col.FindOne(s.GetMongoContext(), bson.M{"user_id": userId}).Decode(&result)
+
+	if err != nil {
+		return "Anon"
+	}
+
+	return result.Name
+}
+
 func UpdatePlayerLeaderboardScore(s *server.ServerContext, userId string) {
 	score := GetPlayerScore(s, userId)
 	overallScore := (score.BattingScore + score.BowlingScore + score.CatchingScore) / 3
 
 	col := s.GetCollection(LeaderboardOverallScoreCollection)
-	userObjId, err := primitive.ObjectIDFromHex(userId)
-
-	if err != nil {
-		panic(err)
-	}
 
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "score", Value: uint32(overallScore)}}}}
 	opts := options.Update().SetUpsert(true)
 
-	col.UpdateByID(s.GetMongoContext(), userObjId, update, opts)
+	col.UpdateOne(s.GetMongoContext(), bson.M{"user_id": userId}, update, opts)
 }
 
 func UpdatePlayerLeaderboardName(s *server.ServerContext, userId, name string) {
 	col := s.GetCollection(LeaderboardOverallScoreCollection)
-	userObjId, err := primitive.ObjectIDFromHex(userId)
-
-	if err != nil {
-		panic(err)
-	}
 
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "name", Value: name}}}}
 	opts := options.Update().SetUpsert(true)
 
-	col.UpdateByID(s.GetMongoContext(), userObjId, update, opts)
+	col.UpdateByID(s.GetMongoContext(), bson.M{"user_id": userId}, update, opts)
 }
