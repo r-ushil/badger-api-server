@@ -107,5 +107,5 @@ func UpdatePlayerLeaderboardName(s *server.ServerContext, userId, name string) {
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "name", Value: name}}}}
 	opts := options.Update().SetUpsert(true)
 
-	col.UpdateByID(s.GetMongoContext(), bson.M{"user_id": userId}, update, opts)
+	col.UpdateOne(s.GetMongoContext(), bson.M{"user_id": userId}, update, opts)
 }
