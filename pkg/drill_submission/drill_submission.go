@@ -31,6 +31,7 @@ type DrillSubmission struct {
 	Timestamp         time.Time `bson:"timestamp"`
 	ProcessingStatus  string    `bson:"processing_status"`
 	DrillScore        uint32    `bson:"drill_score"`
+	SubmissionId      string    `bson:"submission_id"`
 }
 
 func (d *DrillSubmission) GetId() string {
@@ -74,7 +75,7 @@ func (d *DrillSubmission) GetDrillScore() uint32 {
 	return d.DrillScore
 }
 
-func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_submission_v1.DrillSubmission, userId string) string {
+func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_submission_v1.DrillSubmission, userId string, submissionId string) string {
 	col := s.GetCollection("drill_submissions")
 
 	data := DrillSubmission{
@@ -90,6 +91,7 @@ func InsertDrillSubmission(s *server.ServerContext, drill_submission *drill_subm
 			int(drill_submission.Timestamp.Seconds),
 			int(drill_submission.Timestamp.Nanos),
 			time.UTC),
+		SubmissionId:     submissionId,
 		ProcessingStatus: drill_submission.ProcessingStatus,
 		DrillScore:       drill_submission.DrillScore,
 	}
@@ -132,7 +134,7 @@ func getDrillUrl(drillId string) string {
 	return "cover-drive-drill"
 }
 
-func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string, drillId string, userId string) (uint32, string, string) {
+func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucketUrl string, drillId string, userId string, submissionIdNew string) (uint32, string, string) {
 
 	var requestUrl = "https://badger-cv-microservice-6la2hzpokq-ew.a.run.app/" + getDrillUrl(drillId) + "?video_object_name=" + bucketUrl
 	response, get_err := http.Get(requestUrl)
@@ -162,10 +164,10 @@ func ProcessDrillSubmission(s *server.ServerContext, submissionId string, bucket
 
 	if drillId == CATCHING_DRILL_ID {
 		// Have a katchet board drill so update katchetboard drill score
-		drill.RegisterCatchingDrillResults(s, submissionId, uint32(score))
+		drill.RegisterCatchingDrillResults(s, submissionIdNew, uint32(score))
 	} else {
 		// Have cover drive drill so update cover drive score
-		drill.RegisterBattingDrillResults(s, submissionId, uint32(score))
+		drill.RegisterBattingDrillResults(s, submissionIdNew, uint32(score))
 	}
 
 	leaderboard.UpdatePlayerLeaderboardScore(s, userId)
