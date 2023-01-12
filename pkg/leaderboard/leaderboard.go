@@ -45,7 +45,7 @@ func GetPlayerScore(s *server.ServerContext, userId string) PlayerScore {
 	}
 }
 
-func GetTopPlayers(s *server.ServerContext, count uint64) []LeaderboardPlayer {
+func GetTopPlayers(s *server.ServerContext, count int) []LeaderboardPlayer {
 	col := s.GetCollection(LeaderboardOverallScoreCollection)
 
 	filter := bson.D{}
@@ -59,7 +59,11 @@ func GetTopPlayers(s *server.ServerContext, count uint64) []LeaderboardPlayer {
 	}
 
 	var leaderboard []LeaderboardPlayer
-	for _, result := range results {
+	for i, result := range results {
+		if i == count {
+			break
+		}
+
 		leaderboard = append(leaderboard, LeaderboardPlayer{
 			UserId:     result.UserId,
 			Name:       result.Name,
