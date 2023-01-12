@@ -8,6 +8,8 @@ import (
 
 	leaderboardv1 "badger-api/gen/leaderboard/v1"
 	"badger-api/gen/leaderboard/v1/leaderboardv1connect"
+	"badger-api/pkg/auth"
+	"badger-api/pkg/drill"
 	"badger-api/pkg/server"
 )
 
@@ -30,12 +32,19 @@ func (s *LeaderboardServer) GetMyScore(
 	ctx context.Context,
 	req *connect.Request[leaderboardv1.GetMyScoreRequest],
 ) (*connect.Response[leaderboardv1.GetMyScoreResponse], error) {
+	authHeader := req.Header().Get("authorization")
+	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+
 	res := connect.NewResponse(&leaderboardv1.GetMyScoreResponse{
-		BattingScore:  0,
+		BattingScore:  drill.ComputeBattingScoreForUser(s.ctx, userId),
 		CatchingScore: 0,
 		BowlingScore:  0,
 
-		TotalBattingSubmissions:  0,
+		TotalBattingSubmissions:  drill.CountBattingSubmissionsByUser(s.ctx, userId),
 		TotalCatchingSubmissions: 0,
 		TotalBowlingSubmissions:  0,
 	})
