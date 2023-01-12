@@ -19,7 +19,7 @@ type BattingDrillSubmissionDoc struct {
 	VideoObjectName  string           `bson:"video_obj_name"`
 	Timestamp        time.Time        `bson:"timestamp"`
 	ProcessingStatus ProcessingStatus `bson:"processing_status"`
-	Score            uint32           `bson:"score"`
+	Score            uint32           `bson:"score,truncate"`
 }
 
 func SubmitBattingDrill(s *server.ServerContext, videoObjectName string, userId string) string {
@@ -101,7 +101,7 @@ func ComputeBattingScoreForUser(s *server.ServerContext, userId string) uint32 {
 
 	var results []struct {
 		Id    string `bson:"_id"`
-		Score uint32 `bson:"score"`
+		Score uint32 `bson:"score,truncate"`
 	}
 
 	if err = cursor.All(context.TODO(), &results); err != nil {

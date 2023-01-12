@@ -13,7 +13,7 @@ const LeaderboardOverallScoreCollection = "leaderboard_scores"
 type LeaderboardPlayerDoc struct {
 	UserId string `bson:"_id"`
 	Name   string `bson:"name"`
-	Score  uint32 `bson:"score"`
+	Score  uint32 `bson:"score,truncate"`
 }
 
 type LeaderboardPlayer struct {

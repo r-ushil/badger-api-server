@@ -30,7 +30,7 @@ type DrillSubmission struct {
 	BucketUrl         string    `bson:"bucket_url"`
 	Timestamp         time.Time `bson:"timestamp"`
 	ProcessingStatus  string    `bson:"processing_status"`
-	DrillScore        uint32    `bson:"drill_score"`
+	DrillScore        uint32    `bson:"drill_score,truncate"`
 	SubmissionId      string    `bson:"submission_id"`
 }
 
