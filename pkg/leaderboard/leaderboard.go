@@ -5,6 +5,7 @@ import (
 	"badger-api/pkg/server"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -80,18 +81,28 @@ func UpdatePlayerLeaderboardScore(s *server.ServerContext, userId string) {
 	overallScore := (score.BattingScore + score.BowlingScore + score.CatchingScore) / 3
 
 	col := s.GetCollection(LeaderboardOverallScoreCollection)
+	userObjId, err := primitive.ObjectIDFromHex(userId)
+
+	if err != nil {
+		panic(err)
+	}
 
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "score", Value: uint32(overallScore)}}}}
 	opts := options.Update().SetUpsert(true)
 
-	col.UpdateByID(s.GetMongoContext(), userId, update, opts)
+	col.UpdateByID(s.GetMongoContext(), userObjId, update, opts)
 }
 
 func UpdatePlayerLeaderboardName(s *server.ServerContext, userId, name string) {
 	col := s.GetCollection(LeaderboardOverallScoreCollection)
+	userObjId, err := primitive.ObjectIDFromHex(userId)
+
+	if err != nil {
+		panic(err)
+	}
 
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "name", Value: name}}}}
 	opts := options.Update().SetUpsert(true)
 
-	col.UpdateByID(s.GetMongoContext(), userId, update, opts)
+	col.UpdateByID(s.GetMongoContext(), userObjId, update, opts)
 }

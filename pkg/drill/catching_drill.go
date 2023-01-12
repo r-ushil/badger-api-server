@@ -44,8 +44,14 @@ func SubmitCatchingDrill(s *server.ServerContext, videoObjectName string, userId
 func RegisterCatchingDrillResults(s *server.ServerContext, submissionId string, score uint32) {
 	col := s.GetCollection(CatchingDrillSubmissionCollection)
 
+	submissionObjId, err := primitive.ObjectIDFromHex(submissionId)
+
+	if err != nil {
+		panic(err)
+	}
+
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "score", Value: uint32(score)}}}}
-	col.UpdateByID(s.GetMongoContext(), submissionId, update)
+	col.UpdateByID(s.GetMongoContext(), submissionObjId, update)
 }
 
 func CountCatchingSubmissionsByUser(s *server.ServerContext, userId string) uint32 {
