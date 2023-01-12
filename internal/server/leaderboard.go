@@ -9,7 +9,7 @@ import (
 	leaderboardv1 "badger-api/gen/leaderboard/v1"
 	"badger-api/gen/leaderboard/v1/leaderboardv1connect"
 	"badger-api/pkg/auth"
-	"badger-api/pkg/drill"
+	"badger-api/pkg/leaderboard"
 	"badger-api/pkg/server"
 )
 
@@ -39,14 +39,16 @@ func (s *LeaderboardServer) GetMyScore(
 		return nil, connect.NewError(connect.CodeUnauthenticated, err)
 	}
 
-	res := connect.NewResponse(&leaderboardv1.GetMyScoreResponse{
-		BattingScore:  drill.ComputeBattingScoreForUser(s.ctx, userId),
-		CatchingScore: 0,
-		BowlingScore:  0,
+	score := leaderboard.GetPlayerScore(s.ctx, userId)
 
-		TotalBattingSubmissions:  drill.CountBattingSubmissionsByUser(s.ctx, userId),
-		TotalCatchingSubmissions: 0,
-		TotalBowlingSubmissions:  0,
+	res := connect.NewResponse(&leaderboardv1.GetMyScoreResponse{
+		BattingScore:  score.BattingScore,
+		CatchingScore: score.CatchingScore,
+		BowlingScore:  score.BowlingScore,
+
+		TotalBattingSubmissions:  score.TotalBattingSubmissions,
+		TotalCatchingSubmissions: score.TotalCatchingSubmissions,
+		TotalBowlingSubmissions:  score.TotalBowlingSubmissions,
 	})
 
 	return res, nil
