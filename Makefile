@@ -6,6 +6,8 @@ export MONGO_PASS			:= MzCuyaDKrPV7Jtb6
 export MONGO_DB_NAME	:= badger_db
 export PORT						:= 3000
 
+export GOOGLE_APPLICATION_CREDENTIALS := ./google-service-account.json
+
 run: build
 		/usr/local/bin/badger_api
 
