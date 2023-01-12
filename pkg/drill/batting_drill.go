@@ -75,15 +75,20 @@ func CountBattingSubmissionsByUser(s *server.ServerContext, userId string) uint3
 func ComputeBattingScoreForUser(s *server.ServerContext, userId string) uint32 {
 	col := s.GetCollection(BattingDrillSubmissionCollection)
 
-	match_stage := bson.D{{"$match", bson.D{{"user_id", userId}}}}
-	group_stage := bson.D{
-		{"$group",
-			bson.D{
-				{"_id", "$user_id"},
-				{"score", bson.D{{"$avg", "$score"}}},
-			},
+	match_stage := bson.D{{
+		Key: "$match",
+		Value: bson.D{{
+			Key:   "user_id",
+			Value: userId,
+		}},
+	}}
+	group_stage := bson.D{{
+		Key: "$group",
+		Value: bson.D{
+			{Key: "_id", Value: "$user_id"},
+			{Key: "score", Value: bson.D{{Key: "$avg", Value: "$score"}}},
 		},
-	}
+	}}
 
 	cursor, err := col.Aggregate(s.GetMongoContext(), mongo.Pipeline{
 		match_stage,
