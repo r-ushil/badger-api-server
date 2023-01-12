@@ -44,9 +44,8 @@ func SubmitBattingDrill(s *server.ServerContext, videoObjectName string, userId 
 func RegisterBattingDrillResults(s *server.ServerContext, submissionId string, score uint32) {
 	col := s.GetCollection(BattingDrillSubmissionCollection)
 
-	col.UpdateByID(s.GetMongoContext(), submissionId, BattingDrillSubmissionDoc{
-		Score: score,
-	})
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "score", Value: uint32(score)}}}}
+	col.UpdateByID(s.GetMongoContext(), submissionId, update)
 }
 
 func CountBattingSubmissionsByUser(s *server.ServerContext, userId string) uint32 {
