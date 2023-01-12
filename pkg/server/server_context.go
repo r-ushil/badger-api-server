@@ -7,6 +7,7 @@ import (
 	"time"
 
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,7 +19,8 @@ type ServerContext struct {
 	db_cancel context.CancelFunc
 	db        *mongo.Database
 
-	firebase_app *firebase.App
+	firebase_app  *firebase.App
+	firebase_auth *auth.Client
 }
 
 func NewServerContext(db_conn_uri string) *ServerContext {
@@ -48,6 +50,11 @@ func NewServerContext(db_conn_uri string) *ServerContext {
 		log.Fatalf("Error initializing Firebase app: %v\n", err)
 	}
 
+	firebase_auth, err := firebase_app.Auth(context.Background())
+	if err != nil {
+		log.Fatalf("Error initializing Firebase auth: %v\n", err)
+	}
+
 	return &ServerContext{
 		db_client,
 		db_ctx,
@@ -55,6 +62,7 @@ func NewServerContext(db_conn_uri string) *ServerContext {
 		db,
 
 		firebase_app,
+		firebase_auth,
 	}
 }
 
@@ -72,4 +80,8 @@ func (s *ServerContext) GetCollection(collectionName string) *mongo.Collection {
 
 func (s *ServerContext) GetMongoContext() context.Context {
 	return context.Background()
+}
+
+func (s *ServerContext) GetFirebaseAuth() *auth.Client {
+	return s.firebase_auth
 }
