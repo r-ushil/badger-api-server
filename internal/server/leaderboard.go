@@ -21,8 +21,20 @@ func (s *LeaderboardServer) GetTopPlayers(
 	ctx context.Context,
 	req *connect.Request[leaderboardv1.GetTopPlayersRequest],
 ) (*connect.Response[leaderboardv1.GetTopPlayersResponse], error) {
+	topPlayers := leaderboard.GetTopPlayers(s.ctx, int(req.Msg.Count))
+
+	var players []*leaderboardv1.Player
+
+	for _, topPlayer := range topPlayers {
+		players = append(players, &leaderboardv1.Player{
+			Id:    topPlayer.UserId,
+			Name:  topPlayer.Name,
+			Score: topPlayer.TotalScore,
+		})
+	}
+
 	res := connect.NewResponse(&leaderboardv1.GetTopPlayersResponse{
-		TopPlayers: []*leaderboardv1.Player{},
+		TopPlayers: players,
 	})
 
 	return res, nil

@@ -11,6 +11,7 @@ import (
 	"badger-api/gen/drill_submission/v1/drill_submissionv1connect"
 
 	"badger-api/pkg/auth"
+	"badger-api/pkg/common"
 	"badger-api/pkg/drill"
 	"badger-api/pkg/drill_submission"
 	"badger-api/pkg/server"
@@ -18,13 +19,6 @@ import (
 
 type DrillSubmissionServer struct {
 	ctx *server.ServerContext
-}
-
-func withDefault(val string, def string) string {
-	if val == "" {
-		return def
-	}
-	return val
 }
 
 func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
@@ -38,7 +32,7 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	}
 
 	if d.ProcessingStatus != "Done" {
-		drillId := withDefault(d.DrillId, "Cover Drive")
+		drillId := common.WithDefault(d.DrillId, "Cover Drive")
 		submissionId := d.SubmissionId
 		userId := d.UserId
 

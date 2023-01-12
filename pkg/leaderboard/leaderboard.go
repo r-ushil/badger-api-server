@@ -1,6 +1,7 @@
 package leaderboard
 
 import (
+	"badger-api/pkg/common"
 	"badger-api/pkg/drill"
 	"badger-api/pkg/server"
 
@@ -67,7 +68,7 @@ func GetTopPlayers(s *server.ServerContext, count int) []LeaderboardPlayer {
 
 		leaderboard = append(leaderboard, LeaderboardPlayer{
 			UserId:     result.UserId,
-			Name:       result.Name,
+			Name:       common.WithDefault(result.Name, "Anon"),
 			TotalScore: result.Score,
 			Breakdown:  GetPlayerScore(s, result.UserId),
 		})
