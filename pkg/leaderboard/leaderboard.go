@@ -36,11 +36,11 @@ type PlayerScore struct {
 func GetPlayerScore(s *server.ServerContext, userId string) PlayerScore {
 	return PlayerScore{
 		BattingScore:  drill.ComputeBattingScoreForUser(s, userId),
-		CatchingScore: 0,
+		CatchingScore: drill.ComputeCatchingScoreForUser(s, userId),
 		BowlingScore:  0,
 
 		TotalBattingSubmissions:  drill.CountBattingSubmissionsByUser(s, userId),
-		TotalCatchingSubmissions: 0,
+		TotalCatchingSubmissions: drill.CountCatchingSubmissionsByUser(s, userId),
 		TotalBowlingSubmissions:  0,
 	}
 }
