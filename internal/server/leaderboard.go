@@ -58,8 +58,15 @@ func (s *LeaderboardServer) GetMyPublicName(
 	ctx context.Context,
 	req *connect.Request[leaderboardv1.GetMyPublicNameRequest],
 ) (*connect.Response[leaderboardv1.GetMyPublicNameResponse], error) {
+	authHeader := req.Header().Get("authorization")
+	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+
 	res := connect.NewResponse(&leaderboardv1.GetMyPublicNameResponse{
-		Name: "Mock Name",
+		Name: leaderboard.GetPlayerPublicName(s.ctx, userId),
 	})
 
 	return res, nil
@@ -69,6 +76,15 @@ func (s *LeaderboardServer) SetMyPublicName(
 	ctx context.Context,
 	req *connect.Request[leaderboardv1.SetMyPublicNameRequest],
 ) (*connect.Response[leaderboardv1.SetMyPublicNameResponse], error) {
+	authHeader := req.Header().Get("authorization")
+	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+
+	leaderboard.UpdatePlayerLeaderboardName(s.ctx, userId, req.Msg.Name)
+
 	res := connect.NewResponse(&leaderboardv1.SetMyPublicNameResponse{})
 
 	return res, nil
