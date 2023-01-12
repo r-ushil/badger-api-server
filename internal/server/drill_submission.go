@@ -32,13 +32,6 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	req *connect.Request[drill_submission_v1.SubscribeToDrillSubmissionRequest],
 	stream *connect.ServerStream[drill_submission_v1.SubscribeToDrillSubmissionResponse],
 ) error {
-	authHeader := req.Header().Get("authorization")
-	userId, err := auth.ParseAuthHeader(s.ctx, authHeader)
-
-	if err != nil {
-		return err
-	}
-
 	d, err := drill_submission.GetDrillSubmission(s.ctx, req.Msg.DrillSubmissionId)
 	if err != nil {
 		panic(err)
@@ -47,6 +40,7 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 	if d.ProcessingStatus != "Done" {
 		drillId := withDefault(d.DrillId, "Cover Drive")
 		submissionId := d.SubmissionId
+		userId := d.UserId
 
 		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl, drillId, userId, submissionId)
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
