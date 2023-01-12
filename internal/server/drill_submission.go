@@ -11,6 +11,7 @@ import (
 	"badger-api/gen/drill_submission/v1/drill_submissionv1connect"
 
 	"badger-api/pkg/auth"
+	"badger-api/pkg/drill"
 	"badger-api/pkg/drill_submission"
 	"badger-api/pkg/server"
 )
@@ -45,8 +46,9 @@ func (s *DrillSubmissionServer) SubscribeToDrillSubmission(
 
 	if d.ProcessingStatus != "Done" {
 		drillId := withDefault(d.DrillId, "Cover Drive")
+		submissionId := d.SubmissionId
 
-		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl, drillId, userId)
+		score, advice1, advice2 := drill_submission.ProcessDrillSubmission(s.ctx, req.Msg.DrillSubmissionId, d.BucketUrl, drillId, userId, submissionId)
 		res := &drill_submission_v1.SubscribeToDrillSubmissionResponse{
 			DrillScore: score,
 			Advice1:    advice1,
@@ -135,6 +137,15 @@ func (s *DrillSubmissionServer) GetDrillSubmissions(
 
 	return res, nil
 }
+
+func InsertDrillSubmissionOfType(s *server.ServerContext, videoUrl string, userId string, drillName string) string {
+	if drillName == "Katchet Board" {
+		return drill.SubmitCatchingDrill(s, videoUrl, userId)
+	} else {
+		return drill.SubmitBattingDrill(s, videoUrl, userId)
+	}
+}
+
 func (s *DrillSubmissionServer) InsertDrillSubmission(
 	ctx context.Context,
 	req *connect.Request[drill_submission_v1.InsertDrillSubmissionRequest],
@@ -146,7 +157,9 @@ func (s *DrillSubmissionServer) InsertDrillSubmission(
 		return nil, connect.NewError(connect.CodeUnauthenticated, err)
 	}
 
-	hex_id := drill_submission.InsertDrillSubmission(s.ctx, req.Msg.DrillSubmission, userId)
+	submissionId := InsertDrillSubmissionOfType(s.ctx, req.Msg.DrillSubmission.BucketUrl, userId, req.Msg.DrillSubmission.DrillId)
+
+	hex_id := drill_submission.InsertDrillSubmission(s.ctx, req.Msg.DrillSubmission, userId, submissionId)
 	res := connect.NewResponse(&drill_submission_v1.InsertDrillSubmissionResponse{
 		HexId: hex_id,
 	})
