@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	firebase "firebase.google.com/go"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,6 +17,8 @@ type ServerContext struct {
 	db_ctx    context.Context
 	db_cancel context.CancelFunc
 	db        *mongo.Database
+
+	firebase_app *firebase.App
 }
 
 func NewServerContext(db_conn_uri string) *ServerContext {
@@ -39,11 +43,18 @@ func NewServerContext(db_conn_uri string) *ServerContext {
 	db := db_client.Database(os.Getenv("MONGO_DB_NAME"))
 	log.Println("Connecting to database done. ")
 
+	firebase_app, err := firebase.NewApp(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("Error initializing Firebase app: %v\n", err)
+	}
+
 	return &ServerContext{
 		db_client,
 		db_ctx,
 		db_ctx_cancel,
 		db,
+
+		firebase_app,
 	}
 }
 
